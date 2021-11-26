@@ -1,7 +1,7 @@
 <template>
     <div>
         <b-navbar class="header" togglb-navbareable="lg" type="dark">
-            <b-navbar-brand href="#" class="title">Butterfly.Net</b-navbar-brand>
+            <b-navbar-brand href="/" class="title">Butterfly.Net</b-navbar-brand>
         </b-navbar>
     </div>
 </template>
