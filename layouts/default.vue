@@ -1,7 +1,13 @@
 <template>
     <div>
         <Header />
-        <Nuxt />
+        <div class="main">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <Nuxt />
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -14,3 +20,9 @@
     }
 }
 </script>
+
+<style>
+    .cursor {
+        cursor: pointer;
+    }
+</style>
