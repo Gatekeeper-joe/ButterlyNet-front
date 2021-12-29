@@ -1,15 +1,15 @@
 <template>
-  <div>
-    <Navbar />
-  </div>
+    <div class="col-md-8">
+        <Navbar />
+    </div>
 </template>
 
 <script>
-import Navbar from "~/components/Navbar"
+    import Navbar from "~/components/Navbar"
 
-export default {
-  components: {
-    Navbar
-  }
-}
+    export default {
+    components: {
+        Navbar
+    }
+    }
 </script>
