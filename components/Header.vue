@@ -1,20 +1,23 @@
 <template>
-    <div>
-        <b-navbar class="header" togglb-navbareable="lg" type="dark">
-            <b-navbar-brand href="/" class="title">Butterfly.Net</b-navbar-brand>
-        </b-navbar>
+    <div class="">
+        <nuxt-link class="header-link" to="/">
+            <span class="title">Butterfly.Net</span>
+        </nuxt-link>
     </div>
 </template>
 
 <style>
-    .header {
+    .header-link {
         background-color: #00BB00;
         display: block;
         text-align: center;
         height: 80px;
+        text-decoration: none;
+        padding: 10px;
     }
 
     .title {
-        font-size: 40px;
+        color: white;
+        font-size: 4rem;
     }
 </style>
