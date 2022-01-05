@@ -21,7 +21,10 @@
     export default {
         data() {
             return {
-                links: this.$auth.loggedIn ? [
+                links: this.$auth.loggedIn & '/' === location.pathname ? [
+                    { id:1, icon:"bug", text:"Harvest", url:"harvest"},
+                    { id:2, icon:"pencil-square", text:"Regist URL", url:"RegistURL"},
+                ] : this.$auth.loggedIn ? [
                     { id:1, icon:"journal-bookmark", text:"Description", url:"/"},
                     { id:2, icon:"pencil-square", text:"Regist URL", url:"RegistURL"},
                 ] : [
@@ -29,9 +32,10 @@
                     { id:2, icon:"person-circle", text:"Regist User", url:"RegistUser"},
                     { id:3, icon:"pencil-square", text:"Regist URL", url:"RegistURL"},
                 ],
+
+                path: location.pathname,
             };
         },
-
         methods: {
             async logout() {
                 try {
