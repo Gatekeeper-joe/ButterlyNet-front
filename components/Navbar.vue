@@ -21,7 +21,7 @@
     export default {
         data() {
             return {
-                links: this.$auth.loggedIn & '/' === location.pathname ? [
+                links: this.$auth.loggedIn && '/' === this.$route.path ? [
                     { id:1, icon:"bug", text:"Harvest", url:"harvest"},
                     { id:2, icon:"pencil-square", text:"Regist URL", url:"RegistURL"},
                 ] : this.$auth.loggedIn ? [
@@ -33,17 +33,6 @@
                     { id:3, icon:"pencil-square", text:"Regist URL", url:"RegistURL"},
                 ],
             };
-        },
-        methods: {
-            async logout() {
-                try {
-                    this.$axios.$post('/logout')
-                    .then((res)=>{
-                    })
-                } catch (err) {
-                    this.message = err
-                }
-            },
         },
     }
 </script>
