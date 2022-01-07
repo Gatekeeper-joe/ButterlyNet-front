@@ -32,8 +32,6 @@
                     { id:2, icon:"person-circle", text:"Regist User", url:"RegistUser"},
                     { id:3, icon:"pencil-square", text:"Regist URL", url:"RegistURL"},
                 ],
-
-                path: location.pathname,
             };
         },
         methods: {
