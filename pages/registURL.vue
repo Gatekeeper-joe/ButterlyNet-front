@@ -11,12 +11,12 @@
             <div class="card-header card-text">URL登録</div>
 
             <div class="card-body">
-                <form method="POST" @submit.prevent="regist">
+                <form method="GET" @submit.prevent="regist">
                     <div class="form-group row">
                         <label for="url" class="col-md-4 col-form-label text-md-right card-text">URL</label>
 
-                        <div class="col-md-6">
-                            <input id="url" type="text" class="form-control" name="url" required autofocus v-model="url">
+                        <div class="col-md-8">
+                            <input id="url" type="text" class="form-control" name="url" placeholder="更新確認したいページのURLを入力してください" ref="inputURL" required autofocus v-model="url">
                         </div>
                     </div>
 
@@ -54,6 +54,11 @@ export default {
                 alert(err)
             }
         }
+    },
+
+    mounted() {
+        //autofocusを有効にする
+        this.$nextTick(() => this.$refs.inputURL.focus())
     }
 }
 </script>
