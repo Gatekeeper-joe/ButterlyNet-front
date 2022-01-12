@@ -11,7 +11,7 @@
             <div class="card-header card-text">URL登録</div>
 
             <div class="card-body">
-                <form method="GET" @submit.prevent="regist">
+                <form method="POST" @submit.prevent="regist">
                     <div class="form-group row">
                         <label for="url" class="col-md-4 col-form-label text-md-right card-text">URL</label>
 
@@ -30,6 +30,7 @@
                 </form>
             </div>
         </div>
+        <div v-html="error"></div>
     </div>
 </template>
 
@@ -44,15 +45,13 @@ export default {
 
     methods: {
         async regist() {
-            this.error = false
-            try {
-                this.$axios.$get(this.url)
-                .then((res)=>{
-                    alert(res)
-                })
-            } catch (err) {
-                alert(err)
-            }
+            this.$axios.$post('/registURL', { url: this.url})
+            .then((res)=>{
+                alert(res);
+            })
+            .catch((err) => {
+                this.error = "指定されたURLにアクセスできません。" + "<br>" + "再度登録ボタンを押すか利用可能なURLを指定してください。"
+            })
         }
     },
 
