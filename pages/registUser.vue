@@ -101,7 +101,7 @@ export default {
             this.auth.error = false
             this.processing = true
             try {
-                this.$axios.$post('/regist', { data: this.auth })
+                this.$axios.$post('/registUser', { data: this.auth })
                 .then((res)=>{
                     this.validation.messages = res
 
