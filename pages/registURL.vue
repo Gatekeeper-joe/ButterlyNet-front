@@ -16,7 +16,7 @@
                         <label for="url" class="col-md-4 col-form-label text-md-right card-text">URL</label>
 
                         <div class="col-md-8">
-                            <input id="url" type="text" class="form-control" name="url" placeholder="更新確認したいページのURLを入力してください" ref="inputURL" required autofocus v-model="url">
+                            <input id="url" type="text" class="form-control" name="url" placeholder="更新確認したいページのURLを入力してください" ref="inputURL" required autofocus v-model="data.url">
                         </div>
                     </div>
 
@@ -38,14 +38,17 @@
 export default {
     data() {
         return {
-            url: '',
             error: '',
+            data: {
+                url: '',
+                uid: this.$auth.user.id,
+            }
         }
     },
 
     methods: {
         async regist() {
-            this.$axios.$post('/registURL', { url: this.url})
+            this.$axios.$post('/registURL', { data: this.data})
             .then((res)=>{
                 alert(res);
             })
