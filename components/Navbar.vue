@@ -22,15 +22,15 @@
         data() {
             return {
                 links: this.$auth.loggedIn && '/' === this.$route.path ? [
-                    { id:1, icon:"bug", text:"Harvest", url:"harvest"},
-                    { id:2, icon:"pencil-square", text:"Regist URL", url:"RegistURL"},
+                    { id:1, icon:"table", text:"Workspace", url:"workspace"},
+                    { id:2, icon:"pencil-square", text:"Regist URL", url:"registURL"},
                 ] : this.$auth.loggedIn ? [
                     { id:1, icon:"journal-bookmark", text:"Description", url:"/"},
-                    { id:2, icon:"pencil-square", text:"Regist URL", url:"RegistURL"},
+                    { id:2, icon:"pencil-square", text:"Regist URL", url:"registURL"},
                 ] : [
                     { id:1, icon:"door-open", text:"Login", url:"login"},
-                    { id:2, icon:"person-circle", text:"Regist User", url:"RegistUser"},
-                    { id:3, icon:"pencil-square", text:"Regist URL", url:"RegistURL"},
+                    { id:2, icon:"person-circle", text:"Regist User", url:"registUser"},
+                    { id:3, icon:"pencil-square", text:"Regist URL", url:"registURL"},
                 ],
             };
         },
