@@ -8,7 +8,7 @@
                     <div class="form-group row">
                         <label for="nickname" class="col-md-4 col-form-label text-md-right card-text">ニックネーム</label>
                         <div class="col-md-6">
-                            <input id="nickname" type="text" class="form-control" :class="validation.failure.nn ? 'is-invalid': null" name="nickname" required autocomplete="nickname" autofocus v-model="auth.nickname">
+                            <input id="nickname" type="text" class="form-control" :class="validation.failure.nn ? 'is-invalid': null" name="nickname" required autocomplete="nickname" autofocus v-model="auth.nickname"  ref="inputNickname">
                             <span class="invalidFeedback" v-if="validation.failure.nn">
                                 <strong >{{ validation.messages.nickname[0] }}</strong>
                             </span>
@@ -19,11 +19,17 @@
                         <label for="password" class="col-md-4 col-form-label text-md-right card-text">パスワード</label>
 
                         <div class="col-md-6">
+                            <!-- <input id="password" type="password" class="form-control" :class="validation.failure.pwd ? 'is-invalid': null" name="password" required autocomplete="current-password" v-model="auth.password" @focus="display" @blur="hidden"> -->
                             <input id="password" type="password" class="form-control" :class="validation.failure.pwd ? 'is-invalid': null" name="password" required autocomplete="current-password" v-model="auth.password">
                             <span class="invalidFeedback" v-if="validation.failure.pwd">
                                 <strong >{{ validation.messages.password[0] }}</strong>
                             </span>
+                            <div class="speech-bubble">
+                                <p class="">Foo baa</p>
+                            </div>
                         </div>
+                        <!-- <p class="speech-bubble" v-if="focus">Foo baa</p> -->
+
                     </div>
 
                     <div class="form-group row justify-content-center">
@@ -80,6 +86,8 @@ export default {
     data() {
         return {
             processing :false,
+            focus: false,
+
             auth: {
                 nickname : '',
                 password : '',
@@ -129,7 +137,20 @@ export default {
                 this.auth.error = true
                 this.processing = false
             }
+        },
+
+        display() {
+            this.focus = true;
+        },
+
+        hidden() {
+            this.focus = false;
         }
+    },
+
+    mounted() {
+        //autofocusを有効にする
+        this.$nextTick(() => this.$refs.inputNickname.focus())
     }
 }
 </script>
@@ -475,12 +496,12 @@ select.form-control:focus::-ms-value {
 }
 
 .form-control.is-invalid {
-  border-color: #e3342f;
-  padding-right: calc(1.6em + 0.75rem);
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23e3342f' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23e3342f' stroke='none'/%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right calc(0.4em + 0.1875rem) center;
-  background-size: calc(0.8em + 0.375rem) calc(0.8em + 0.375rem);
+    border-color: #e3342f;
+    padding-right: calc(1.6em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23e3342f' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23e3342f' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.4em + 0.1875rem) center;
+    background-size: calc(0.8em + 0.375rem) calc(0.8em + 0.375rem);
 }
 
 .was-validated .form-control:invalid:focus,
@@ -538,7 +559,7 @@ textarea.form-control.is-invalid {
 
 .was-validated .custom-control-input:invalid:focus ~ .custom-control-label::before,
 .custom-control-input.is-invalid:focus ~ .custom-control-label::before {
-  box-shadow: 0 0 0 0.2rem rgba(227, 52, 47, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(227, 52, 47, 0.25);
 }
 
 .was-validated .custom-control-input:invalid:focus:not(:checked) ~ .custom-control-label::before,
@@ -649,4 +670,151 @@ fieldset:disabled a.btn {
 .show > .btn-primary.dropdown-toggle:focus {
     box-shadow: 0 0 0 0.2rem rgba(82, 161, 225, 0.5);
 }
+
+/* .speech-bubble {
+    position: relative;
+    display: inline-block;
+    background-color: #fff;
+    border: solid 1px #525252;
+    padding: 16px;
+    min-width: 240px;
+    max-width: 100%;
+    text-align: center;
+}
+.speech-bubble:before,
+.speech-bubble:after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+.speech-bubble:before {
+    border: solid 1px transparent;
+    border-top: solid 12px #525252;
+}
+.speech-bubble:after {
+    border: solid 14px transparent;
+    border-top: solid 14px #fff;
+    margin-top: -5px;
+}
+.speech-bubble p {
+    margin: 0;
+    padding: 0;
+} */
+
+.speech-bubble-indicator {
+    visibility: hidden
+}
+
+.speech-bubble-pointer {
+    position: absolute;
+    top: 37px;
+    right: -13px;
+    content: '';
+    width: 10px;
+    height: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
+    transform: rotateZ(45deg)
+}
+
+.speech-bubble {
+    position: absolute;
+    top: 22px;
+    right: -248px;
+    z-index: 1;
+    width: 240px;
+    height: 200px
+}
+
+.speech-bubble:before {
+    content: '';
+    width: 240px;
+    height: 20px;
+    position: absolute;
+    background-color: #fff;
+    top: 0;
+    left: 0;
+    border-bottom-left-radius: 15px;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
+    z-index: -1
+}
+
+.speech-bubble .speech-bubble-content {
+    background-color: #fff;
+    padding: 16px;
+    z-index: 1
+}
+
+.speech-bubble:after {
+    content: '';
+    width: 240px;
+    height: 192px;
+    position: absolute;
+    background-color: #fff;
+    bottom: -11px;
+    left: 0;
+    border-top-left-radius: 15px;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
+    z-index: -1
+}
+
+.speech-bubble .strength-progress .strength-progress-background {
+    stroke: #282828;
+    opacity: .1
+}
+
+.speech-bubble .strength-progress .strength-progress-foreground.is-short,.speech-bubble .strength-progress .strength-progress-foreground.is-weak {
+    stroke: #f62f2f
+}
+
+.speech-bubble .strength-progress .strength-progress-foreground.is-fair {
+    stroke: #fdb432
+}
+
+.speech-bubble .strength-progress .strength-progress-foreground.is-strong {
+    stroke: #26b47f
+}
+
+.speech-bubble .strength-title {
+    font-size: 12px;
+    opacity: .6;
+    color: #000;
+    display: inline;
+    float: left;
+    font-weight: 800
+}
+
+.speech-bubble .strength-description {
+    font-size: 12px;
+    text-align: left;
+    line-height: 2;
+    color: grey
+}
+
+.speech-bubble .strength-text {
+    display: inline;
+    float: left;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #f62f2f;
+    margin-left: 10px;
+    margin-right: 10px
+}
+
+.speech-bubble .strength-text.is-short,.speech-bubble .strength-text.is-weak {
+    color: #f62f2f
+}
+
+.speech-bubble .strength-text.is-fair {
+    color: #fdb432
+}
+
+.speech-bubble .strength-text.is-strong {
+    color: #26b47f
+}
+
 </style>
