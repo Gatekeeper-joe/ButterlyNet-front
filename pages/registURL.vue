@@ -1,11 +1,4 @@
 <template>
-    <!-- <div class="col-md-9">
-        <div class="regist-url">
-            <div class="ru-form-group">
-                <input type="text" placeholder="URLを入力してください">
-            </div>
-        </div>
-    </div> -->
     <div class="col-md-7">
         <div class="card mt-5">
             <div class="card-header card-text">URL登録</div>
@@ -13,15 +6,18 @@
             <div class="card-body">
                 <form method="POST" @submit.prevent="regist">
                     <div class="form-group row">
-                        <label for="url" class="col-md-4 col-form-label text-md-right card-text">URL</label>
+                        <label for="url" class="col-md-3 col-form-label text-md-right card-text">URL</label>
 
                         <div class="col-md-8">
-                            <input id="url" type="text" class="form-control" name="url" placeholder="更新確認したいページのURLを入力してください" ref="inputURL" required autofocus v-model="data.url">
+                            <input id="url" type="text" class="form-control" :class="duplication ? 'is-invalid': null" name="url" placeholder="更新確認したいページのURLを入力してください" ref="inputURL" required autofocus v-model="data.url">
+                            <span class="invalidFeedback" v-if="duplication">
+                                <strong >{{ message }}</strong>
+                            </span>
                         </div>
                     </div>
 
                     <div class="form-group row mb-0 form-lower-part">
-                        <div class="col-md-8 offset-md-4">
+                        <div class="col-md-12 text-center">
                             <button type="submit" class="btn btn-primary">
                                 登録
                             </button>
@@ -39,6 +35,8 @@ export default {
     data() {
         return {
             error: '',
+            duplication: false,
+            message: '',
             data: {
                 url: '',
                 uid: this.$auth.user.id,
@@ -50,9 +48,19 @@ export default {
         async regist() {
             this.$axios.$post('/registURL', { data: this.data})
             .then((res)=>{
-                alert(res);
+                if (res === 0) {
+                    this.duplication = true,
+                    this.message = '指定したURLは既に登録されています'
+                } else {
+                    this.message = '';
+                    this.duplication = false;
+                    this.data.url = '';
+                    alert('URLの登録が完了しました。');
+                    this.$nextTick(() => this.$refs.inputURL.focus())
+                }
             })
             .catch((err) => {
+                alert(err);
                 this.error = "指定されたURLにアクセスできません。" + "<br>" + "再度登録ボタンを押すか利用可能なURLを指定してください。"
             })
         }
@@ -320,6 +328,89 @@ export default {
         color: #e3342f;
     }
 
+.form-control.is-invalid {
+    border-color: #e3342f;
+    padding-right: calc(1.6em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23e3342f' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23e3342f' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.4em + 0.1875rem) center;
+    background-size: calc(0.8em + 0.375rem) calc(0.8em + 0.375rem);
+}
+
+.was-validated .form-control:invalid:focus,
+.form-control.is-invalid:focus {
+  border-color: #e3342f;
+  box-shadow: 0 0 0 0.2rem rgba(227, 52, 47, 0.25);
+}
+
+.was-validated textarea.form-control:invalid,
+textarea.form-control.is-invalid {
+  padding-right: calc(1.6em + 0.75rem);
+  background-position: top calc(0.4em + 0.1875rem) right calc(0.4em + 0.1875rem);
+}
+
+.was-validated .custom-select:invalid,
+.custom-select.is-invalid {
+  border-color: #e3342f;
+  padding-right: calc(0.75em + 2.3125rem);
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat, #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23e3342f' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23e3342f' stroke='none'/%3e%3c/svg%3e") center right 1.75rem/calc(0.8em + 0.375rem) calc(0.8em + 0.375rem) no-repeat;
+}
+
+.was-validated .custom-select:invalid:focus,
+.custom-select.is-invalid:focus {
+  border-color: #e3342f;
+  box-shadow: 0 0 0 0.2rem rgba(227, 52, 47, 0.25);
+}
+
+.was-validated .form-check-input:invalid ~ .form-check-label,
+.form-check-input.is-invalid ~ .form-check-label {
+  color: #e3342f;
+}
+
+.was-validated .form-check-input:invalid ~ .invalid-feedback,
+.was-validated .form-check-input:invalid ~ .invalid-tooltip,
+.form-check-input.is-invalid ~ .invalid-feedback,
+.form-check-input.is-invalid ~ .invalid-tooltip {
+  display: block;
+}
+
+.was-validated .custom-control-input:invalid ~ .custom-control-label,
+.custom-control-input.is-invalid ~ .custom-control-label {
+  color: #e3342f;
+}
+
+.was-validated .custom-control-input:invalid ~ .custom-control-label::before,
+.custom-control-input.is-invalid ~ .custom-control-label::before {
+  border-color: #e3342f;
+}
+
+.was-validated .custom-control-input:invalid:checked ~ .custom-control-label::before,
+.custom-control-input.is-invalid:checked ~ .custom-control-label::before {
+  border-color: #e9605c;
+  background-color: #e9605c;
+}
+
+.was-validated .custom-control-input:invalid:focus ~ .custom-control-label::before,
+.custom-control-input.is-invalid:focus ~ .custom-control-label::before {
+    box-shadow: 0 0 0 0.2rem rgba(227, 52, 47, 0.25);
+}
+
+.was-validated .custom-control-input:invalid:focus:not(:checked) ~ .custom-control-label::before,
+.custom-control-input.is-invalid:focus:not(:checked) ~ .custom-control-label::before {
+  border-color: #e3342f;
+}
+
+.was-validated .custom-file-input:invalid ~ .custom-file-label,
+.custom-file-input.is-invalid ~ .custom-file-label {
+  border-color: #e3342f;
+}
+
+.was-validated .custom-file-input:invalid:focus ~ .custom-file-label,
+.custom-file-input.is-invalid:focus ~ .custom-file-label {
+  border-color: #e3342f;
+  box-shadow: 0 0 0 0.2rem rgba(227, 52, 47, 0.25);
+}
+
     .form-control {
         display: block;
         width: 100%;
@@ -486,6 +577,13 @@ export default {
     .custom-file-input.is-invalid:focus ~ .custom-file-label {
     border-color: #e3342f;
     box-shadow: 0 0 0 0.2rem rgba(227, 52, 47, 0.25);
+    }
+
+    .invalidFeedback {
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 1.3rem;
+        color: #e3342f;
     }
 
     .btn {
