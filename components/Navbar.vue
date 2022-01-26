@@ -30,7 +30,7 @@
                 ] : [
                     { id:1, icon:"door-open", text:"Login", url:"login"},
                     { id:2, icon:"person-circle", text:"Regist User", url:"registUser"},
-                    { id:3, icon:"pencil-square", text:"Regist URL", url:"registURL"},
+                    { id:3, icon:"journal-bookmark", text:"Description", url:"/"},
                 ],
             };
         },
