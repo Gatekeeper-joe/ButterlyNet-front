@@ -23,7 +23,7 @@
 
                     <div class="form-group row justify-content-center">
                         <div class="col-md-6">
-                            <span class="invalidfeedback" v-if="validation.messages">
+                            <span class="invalidfeedback" v-if="validation.message">
                                 <strong>メールアドレスまたはパスワードが違います</strong>
                             </span>
                         </div>
@@ -65,7 +65,7 @@ export default {
             },
 
             validation: {
-                messages: '',
+                message: '',
                 failure: {
                     nn: false,
                     pwd: false
