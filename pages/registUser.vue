@@ -19,7 +19,7 @@
                         <label for="password" class="col-md-4 col-form-label text-md-right card-text">パスワード</label>
 
                         <div class="col-md-6">
-                            <!-- <input id="password" type="password" class="form-control" :class="validation.failure.pwd ? 'is-invalid': null" name="password" required autocomplete="current-password" v-model="auth.password" @focus="display" @blur="hidden"> -->
+                            <!--入力値の条件を吹き出しで出すときの処理。いったん凍結中。<input id="password" type="password" class="form-control" :class="validation.failure.pwd ? 'is-invalid': null" name="password" required autocomplete="current-password" v-model="auth.password" @focus="display" @blur="hidden"> -->
                             <input id="password" type="password" class="form-control" :class="validation.failure.pwd ? 'is-invalid': null" name="password" required autocomplete="current-password" v-model="auth.password">
                             <span class="invalidFeedback" v-if="validation.failure.pwd">
                                 <strong >{{ validation.messages.password[0] }}</strong>
