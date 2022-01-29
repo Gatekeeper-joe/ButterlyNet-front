@@ -1,7 +1,7 @@
 <template>
     <div class="nav-bar">
-        <ul class="nav-list">
-            <li v-if="$auth.loggedIn" class="nav-item cursor">
+        <ul class="nav-list" :class="this.navwidth ? 'nav-width-s': 'nav-width-l'">
+            <li v-if="$auth.loggedIn" class="nav-item cursors">
                 <div class="nav-link" @click="$auth.logout()">
                     <b-icon icon="door-open"></b-icon>
                     <span class="link-text">logout</span>
@@ -21,18 +21,28 @@
     export default {
         data() {
             return {
+                navWidth: true,
+
                 links: this.$auth.loggedIn && '/' === this.$route.path ? [
                     { id:1, icon:"table", text:"Workspace", url:"workspace"},
                     { id:2, icon:"pencil-square", text:"Regist URL", url:"registURL"},
+                    { id:3, icon:"person-circle", text:this.$auth.user.nickname, url:"resetPassword"},
                 ] : this.$auth.loggedIn ? [
                     { id:1, icon:"journal-bookmark", text:"Description", url:"/"},
                     { id:2, icon:"pencil-square", text:"Regist URL", url:"registURL"},
+                    { id:3, icon:"person-circle", text:this.$auth.user.nickname, url:"resetPassword"},
                 ] : [
                     { id:1, icon:"door-open", text:"Login", url:"login"},
                     { id:2, icon:"person-circle", text:"Regist User", url:"registUser"},
                     { id:3, icon:"journal-bookmark", text:"Description", url:"/"},
                 ],
             };
+        },
+
+        created() {
+            if (this.$route.path === '/') {
+                this.navWidth = true;
+            }
         },
     }
 </script>
@@ -50,6 +60,14 @@
         text-align: center;
     }
 
+    .nav-width-s {
+        width: 389px;
+    }
+
+    .nav-width-l {
+        width: 515px;
+    }
+
     .nav-list {
         padding: 0;
         margin: 0 auto;
@@ -61,11 +79,11 @@
         list-style-type: none;
         overflow: hidden;
         justify-content: space-between;
-        width: 387px;
     }
 
     .nav-item {
         display: flex;
+        cursor: pointer;
     }
 
     .nav-link {
