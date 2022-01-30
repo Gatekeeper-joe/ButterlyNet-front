@@ -7,6 +7,8 @@
             </div>
             <div class="col-md-6">
                 <div class="h-table-content">
+                    <!-- http://weboook.blog22.fc2.com/blog-entry-329.html -->
+                    <!-- https://webliker.info/75964/ -->
                     <table>
                         <tbody>
                             <tr>
