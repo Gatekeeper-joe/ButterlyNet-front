@@ -7,25 +7,28 @@
             </div>
             <div class="col-md-6">
                 <div class="h-table-content">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td></td>
-                                <th>Updated pages</th>
-                                <th>Updated time</th>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>www.google.com</td>
-                                <td>2022/1/29 00:00:00</td>
-                            </tr>
-                                                        <tr>
-                                <td>1</td>
-                                <td>www.google.com</td>
-                                <td>2022/1/29 00:00:00</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <v-container>
+                        <!-- <v-row>
+                            <v-col cols="10">
+                                <v-data-table :headers="headers" :items="items">
+                                    <template v-slot:[`item.host`]="{ item }">
+                                        <a :href="item.url"> {{ item.host }}</a>
+                                    </template>
+                                </v-data-table>
+                            </v-col>
+                        </v-row> -->
+
+                        <v-row>
+                            <template>
+                                <v-data-table
+                                    :headers="headers"
+                                    :items="items"
+                                    :items-per-page="5"
+                                    class="elevation-1"
+                                ></v-data-table>
+                            </template>
+                        </v-row>
+                    </v-container>
                 </div>
             </div>
         </div>
@@ -33,6 +36,7 @@
 </template>
 
 <script>
+    const axios = require('axios')
     import Navbar from "~/components/Navbar"
     import Bookmark from "~/components/Bookmark"
 
@@ -43,7 +47,6 @@
         },
 
         middleware: ['auth'],
-
         head() {
             return {
                 title: 'ホーム'
@@ -52,76 +55,67 @@
 
         data() {
             return {
+                user_id: this.$auth.user.id,
+
+                headers: [
+                    {text: '', value: 'count'},
+                    {text: 'Updated page', value: 'host'},
+                    {text: 'Updated time', value: 'last_updated_at'},
+                ],
+
+                items: [],
             }
         },
 
-        // beforeRouteEnter(to, from, next) {
-        //     next(vm => {
-        //         vm.prevRoute = from;
-        //     })
-        // },
+        beforeRouteEnter(to, from, next) {
+            next(vm => {
+                vm.prevRoute = from;
+            })
+        },
 
-        // mounted() {
-        //     if (this.prevRoute.path === '/registUser') {
-        //         this.message = 'ユーザ登録が完了しました。' + "\n" + '最高の体験があなたを待っています(小並感)';
-        //         alert(this.message);
-        //     }
-        // },
+        mounted() {
+            this.$axios.$post('/getUpdated', { uid: this.user_id })
+            .then((pageData) => {
+                pageData.forEach((v, i) => {
+                    i += 1;
+                    v['count'] = i;
+                    this.items.push(v);
+                })
+            })
+            .catch ((err) => {
+                this.result = err;
+            })
+            // if (this.prevRoute.path === '/registUser') {
+            //     this.message = 'ユーザ登録が完了しました。' + "\n" + '最高の体験があなたを待っています(小並感)';
+            //     alert(this.message);
+            // }
+        },
+
     }
 </script>
 
 <style>
-    table {
-        width: auto;
-        border-spacing: 0;
-        font-size:14px;
-    }
-    table th {
-        color: #fff;
-        padding: 8px 15px;
-        background: #258;
-        background:-moz-linear-gradient(rgba(34,85,136,0.7), rgba(34,85,136,0.9) 50%);
-        background:-webkit-gradient(linear, 100% 0%, 100% 50%, from(rgba(34,85,136,0.7)), to(rgba(34,85,136,0.9)));
-        font-weight: normal;
-        border-left:1px solid #258;
-        border-top:1px solid #258;
-        border-bottom:1px solid #258;
-        line-height: 100%;
-        text-align: center;
-        text-shadow:0 -1px 0 rgba(34,85,136,0.9);
-        box-shadow: 0px 1px 1px rgba(255,255,255,0.3) inset;
-    }
-    table th:first-child {
-        border-radius: 5px 0 0 0;
-    }
-    table th:last-child {
-        border-radius:0 5px 0 0;
-        border-right:1px solid #258;
-        box-shadow: 2px 2px 1px rgba(0,0,0,0.1),0px 1px 1px rgba(255,255,255,0.3) inset;
-    }
-    table tr td {
-        padding: 5px 40px;
-        border-bottom: 1px solid #84b2e0;
-        border-left: 1px solid #84b2e0;
-        text-align: center;
-    }
-    table tr td:last-child {
-        border-right: 1px solid #84b2e0;
-        box-shadow: 2px 2px 1px rgba(0,0,0,0.1);
-    }
-    table tr {
-        background: #fff;
-    }
-    table tr:nth-child(2n+1) {
-        background: #f1f6fc;
-    }
-    table tr:last-child td {
-        box-shadow: 2px 2px 1px rgba(0,0,0,0.1);
-    }
-    table tr:last-child td:first-child {
-        border-radius: 0 0 0 5px;
-    }
-    table tr:last-child td:last-child {
-        border-radius: 0 0 5px 0;
-    }
+.v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
+    font-size: 1.5rem;
+    height: 60px;
+}
+
+.v-data-footer {
+    font-size: 1.4rem;
+    justify-content: center;
+}
+
+.v-data-footer__select {
+    display: flex;
+    align-items: center;
+    flex: 0 0 0;
+    justify-content: flex-end;
+    white-space: nowrap;
+    margin-right: 10px;
+}
+
+.v-input {
+    font-size: 16px;
+    margin-left: 10px;
+}
 </style>
