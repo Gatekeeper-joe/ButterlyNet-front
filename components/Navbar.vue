@@ -1,6 +1,7 @@
 <template>
     <div class="nav-bar">
-        <ul class="nav-list" :class="this.navwidth ? 'nav-width-s': 'nav-width-l'">
+        <!-- <ul class="nav-list" :class="this.navwidth ? 'nav-width-s': 'nav-width-l'"> -->
+        <ul class="nav-list">
             <li v-if="$auth.loggedIn" class="nav-item cursors">
                 <div class="nav-link" @click="$auth.logout()">
                     <b-icon icon="door-open"></b-icon>
@@ -56,7 +57,7 @@
     }
 
     .nav-bar {
-        margin-top: 40px;
+        margin-top: 50px;
         text-align: center;
     }
 
@@ -79,6 +80,7 @@
         list-style-type: none;
         overflow: hidden;
         justify-content: space-between;
+        width: 515px;
     }
 
     .nav-item {
@@ -87,7 +89,7 @@
     }
 
     .nav-link {
-        padding: 1.1rem 1rem;
+        padding: 1.15rem 0.9rem;
         display: flex;
         align-items: center;
         color: var(--link-text-color);
