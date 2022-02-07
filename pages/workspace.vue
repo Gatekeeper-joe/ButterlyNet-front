@@ -24,14 +24,26 @@
                                     :headers="headers"
                                     :items="items"
                                     :items-per-page="5"
+                                    :disable-sort=true
+                                    sort-by="count"
                                     class="elevation-1"
-                                ></v-data-table>
+                                >
+                                    <template v-slot:[`item.actions`]="{ item }" @mouseover="showIcon()" @mouseleave="hideIcon()">
+                                        <v-icon small @click="deleteItem(item)">
+                                            mdi-delete
+                                        </v-icon>
+                                    </template>
+                                    <template v-slot:no-data>
+                                        <span>更新されたページはありません</span>
+                                    </template>
+                                </v-data-table>
                             </template>
                         </v-row>
                     </v-container>
                 </div>
             </div>
         </div>
+        {{ this.icon }}
     </div>
 </template>
 
@@ -56,15 +68,53 @@
         data() {
             return {
                 user_id: this.$auth.user.id,
+                count: '',
+                icon: false,
 
                 headers: [
                     {text: '', value: 'count'},
                     {text: 'Updated page', value: 'host'},
                     {text: 'Updated time', value: 'last_updated_at'},
+                    {text: '', value: 'actions', sortable: false},
                 ],
 
                 items: [],
             }
+        },
+
+        methods: {
+            showIcon () {
+                this.icon = true;
+            },
+
+            hideIcon () {
+                this.icon = false;
+            },
+
+            getUpdated () {
+                this.$axios.$post('/getUpdated', { uid: this.user_id })
+                .then((pageData) => {
+                    this.count = pageData.length;
+                    pageData.forEach((v, i) => {
+                        i += 1;
+                        v['count'] = i;
+                        this.items.push(v);
+                    })
+                })
+                .catch ((err) => {
+                    this.result = err;
+                })
+            },
+
+            displayIcon () {
+                this.hover = true;
+            },
+
+            deleteItem (item) {
+                this.editedIndex = this.items.indexOf(item)
+                this.editedItem = Object.assign({}, item)
+                this.dialogDelete = true
+            },
         },
 
         beforeRouteEnter(to, from, next) {
@@ -73,18 +123,11 @@
             })
         },
 
+    created () {
+        this.getUpdated()
+    },
+
         mounted() {
-            this.$axios.$post('/getUpdated', { uid: this.user_id })
-            .then((pageData) => {
-                pageData.forEach((v, i) => {
-                    i += 1;
-                    v['count'] = i;
-                    this.items.push(v);
-                })
-            })
-            .catch ((err) => {
-                this.result = err;
-            })
             // if (this.prevRoute.path === '/registUser') {
             //     this.message = 'ユーザ登録が完了しました。' + "\n" + '最高の体験があなたを待っています(小並感)';
             //     alert(this.message);
@@ -97,12 +140,12 @@
 <style>
 .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
     font-size: 1.5rem;
-    height: 60px;
+    height: 50px;
+    padding: 0 15px;
 }
 
 .v-data-footer {
     font-size: 1.4rem;
-    justify-content: center;
 }
 
 .v-data-footer__select {
@@ -118,4 +161,5 @@
     font-size: 16px;
     margin-left: 10px;
 }
+
 </style>
