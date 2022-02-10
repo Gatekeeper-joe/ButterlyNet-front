@@ -1,61 +1,22 @@
 <template>
     <div class="workspace">
         <Navbar />
-        <div class="a-dashboard d-flex mt-5">
-            <div class="col-md-7">
-                <span class="mt-3">reserved</span>
-            </div>
-            <div class="col-md-6">
-                <div class="h-table-content">
-                    <v-container>
-                        <!-- <v-row>
-                            <v-col cols="10">
-                                <v-data-table :headers="headers" :items="items">
-                                    <template v-slot:[`item.host`]="{ item }">
-                                        <a :href="item.url"> {{ item.host }}</a>
-                                    </template>
-                                </v-data-table>
-                            </v-col>
-                        </v-row> -->
-
-                        <v-row>
-                            <template>
-                                <v-data-table
-                                    :headers="headers"
-                                    :items="items"
-                                    :items-per-page="5"
-                                    :disable-sort=true
-                                    sort-by="count"
-                                    class="elevation-1"
-                                >
-                                    <template v-slot:[`item.actions`]="{ item }" @mouseover="showIcon()" @mouseleave="hideIcon()">
-                                        <v-icon small @click="deleteItem(item)">
-                                            mdi-delete
-                                        </v-icon>
-                                    </template>
-                                    <template v-slot:no-data>
-                                        <span>更新されたページはありません</span>
-                                    </template>
-                                </v-data-table>
-                            </template>
-                        </v-row>
-                    </v-container>
-                </div>
-            </div>
-        </div>
-        {{ this.icon }}
+        <UpdatedPageTable />
+        <HandoffTable />
     </div>
 </template>
 
 <script>
     const axios = require('axios')
     import Navbar from "~/components/Navbar"
-    import Bookmark from "~/components/Bookmark"
+    import UpdatedPageTable from "~/components/UpdatedPageTable"
+    // import HandoffTable from "~/components/HandoffTable"
 
     export default {
         components: {
             Navbar,
-            Bookmark
+            // HandoffTable,
+            UpdatedPageTable,
         },
 
         middleware: ['auth'],
@@ -68,34 +29,34 @@
         data() {
             return {
                 user_id: this.$auth.user.id,
+                pageData: '',
                 count: '',
-                icon: false,
+                index: '',
+                items: [],
+                editedItem: '',
+                editedIndex: '',
 
-                headers: [
+                hostTableHeaders: [
                     {text: '', value: 'count'},
                     {text: 'Updated page', value: 'host'},
                     {text: 'Updated time', value: 'last_updated_at'},
                     {text: '', value: 'actions', sortable: false},
                 ],
 
-                items: [],
+                updateTarget: {
+                    uid: this.$auth.user.id,
+                    host: '',
+                },
             }
         },
 
         methods: {
-            showIcon () {
-                this.icon = true;
-            },
-
-            hideIcon () {
-                this.icon = false;
-            },
-
             getUpdated () {
                 this.$axios.$post('/getUpdated', { uid: this.user_id })
                 .then((pageData) => {
-                    this.count = pageData.length;
-                    pageData.forEach((v, i) => {
+                    this.pageData = pageData;
+                    this.count = this.pageData.length;
+                    this.pageData.forEach((v, i) => {
                         i += 1;
                         v['count'] = i;
                         this.items.push(v);
@@ -111,9 +72,24 @@
             },
 
             deleteItem (item) {
-                this.editedIndex = this.items.indexOf(item)
-                this.editedItem = Object.assign({}, item)
-                this.dialogDelete = true
+                this.index = this.items.indexOf(item);
+                this.items.splice(this.index, 1);
+                this.count = this.items.length;
+                this.items.forEach((v, i) => {
+                    i += 1;
+                    v['count'] = i;
+                });
+
+                this.updateTarget.host = item.host;
+
+                this.$axios.$post('/updateFlag', { targetData: this.updateTarget })
+                .then((res) => {
+                    return;
+                })
+                .catch((err) => {
+                    errorMessage = 'データの削除に失敗しました。';
+                    alert(errorMessage);
+                })
             },
         },
 
