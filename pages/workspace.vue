@@ -1,8 +1,16 @@
 <template>
     <div class="workspace">
         <Navbar />
-        <UpdatedPageTable />
-        <HandoffTable />
+        <div class="a-dashboard d-flex">
+            <div class="col-md-7">
+                <span class="mt-3">reserved</span>
+            </div>
+            <UpdatedPageTable />
+        </div>
+
+        <div class="mt-5 handoff-table">
+            <HandoffTable />
+        </div>
     </div>
 </template>
 
