@@ -1,5 +1,5 @@
 <template>
-    <div class="col-md-8">
+    <div class="index">
         <Navbar />
     </div>
 </template>
