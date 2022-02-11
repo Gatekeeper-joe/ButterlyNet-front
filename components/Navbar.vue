@@ -57,8 +57,9 @@
     }
 
     .nav-bar {
-        margin-top: 50px;
+        margin-top: 60px;
         text-align: center;
+        margin-bottom: 30px;
     }
 
     .nav-width-s {
