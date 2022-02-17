@@ -9,21 +9,23 @@
         </div>
 
         <div class="mt-5 handoff-table">
-            <HandoffTable />
+            <HandoffTable :gid="this.gid" />
         </div>
     </div>
 </template>
 
+<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
 <script>
     const axios = require('axios')
     import Navbar from "~/components/Navbar"
     import UpdatedPageTable from "~/components/UpdatedPageTable"
-    // import HandoffTable from "~/components/HandoffTable"
+    import HandoffTable from "~/components/HandoffTable"
 
     export default {
         components: {
             Navbar,
-            // HandoffTable,
+            HandoffTable,
             UpdatedPageTable,
         },
 
@@ -37,6 +39,7 @@
         data() {
             return {
                 user_id: this.$auth.user.id,
+                gid: this.$auth.user.group_id,
                 pageData: '',
                 count: '',
                 index: '',
@@ -144,6 +147,10 @@
 .v-input {
     font-size: 16px;
     margin-left: 10px;
+}
+
+.handoff-table {
+    margin-bottom: 100px;
 }
 
 </style>
