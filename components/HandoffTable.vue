@@ -31,7 +31,7 @@
                                     <v-col cols="6" class="text-center">
                                         <v-col cols="6">
                                             <template>
-                                                    <v-btn color="#795548" dark class="mb-2" @click="save">
+                                                    <v-btn color="#00BB00" dark class="mb-2" @click="save">
                                                         <v-icon size="32" class="pr-5">
                                                             mdi-new-box
                                                         </v-icon>
@@ -83,20 +83,46 @@
                                 </v-row>
                             </v-toolbar>
                         </template>
+                        <template v-slot:expanded-item="{ item }">
+                            <td :colspan="4">
+                                {{ item.body }}
+                            </td>
+                            <v-btn depressed color="#795548" dark @click="add">
+                                Add
+                            </v-btn>
+                            <v-btn depressed color="#000000" dark @click="updateBody">
+                                Update
+                            </v-btn>
+                        </template>
+                        <template v-slot:[`item.subject`]="{ item }">
+                            <v-edit-dialog
+                                :return-value.sync="item.subject"
+                                >
+                                {{ item.subject }}
+                                <template v-slot:input>
+                                    <v-text-field
+                                    v-model="item.subject"
+                                    @change="updateRecord(item)"
+                                    :rules="[max25chars]"
+                                    label="Edit"
+                                    single-line
+                                    counter
+                                    ></v-text-field>
+                                </template>
+                            </v-edit-dialog>
+                        </template>
+                        <template v-slot:[`item.status`]="{ item }">
+                            <v-chip
+                                :color="getColor(item.status)"
+                                dark
+                            >
+                                {{ item.status }}
+                            </v-chip>
+                        </template>
                         <template v-slot:[`item.actions`]="{ item }">
                             <v-icon small @click="deleteItem(item)">
                                 mdi-delete
                             </v-icon>
-                        </template>
-                        <template v-slot:expanded-item="{ item }">
-                            <td :colspan="5">
-                                {{ item.body }}
-                            </td>
-                            <td>
-                                <v-btn depressed color="error">
-                                    Add
-                                </v-btn>
-                            </td>
                         </template>
                         <template v-slot:no-data>
                             <span>引継ぎはありません</span>
@@ -105,7 +131,6 @@
                 </template>
             </v-row>
         </v-container>
-        {{ records }}
     </div>
 </template>
 
@@ -113,7 +138,6 @@
 const axios = require('axios');
 
 export default {
-    records: '',
     props: ['gid'],
 
     data: () => ({
@@ -126,11 +150,14 @@ export default {
             { text: '', value: 'actions', sortable: false, filterable: false},
         ],
         items: [],
-        dialog: false,
-        dialogDelete: false,
-        search: '',
         expanded: [],
 
+        search: '',
+
+        max25chars: v => v.length <= 25 || 'Input too long!',
+
+        dialog: false,
+        dialogDelete: false,
         editedIndex: -1,
         editedItem: {
             subject: '',
@@ -142,10 +169,16 @@ export default {
         },
         newItem: {
             group_id: '1',
-            status: 'in progress',
+            status: 'Close',
             subject: '手順書作成',
             body: '障害対応の手順書が未完成のため、対応お願いいたします。',
-        }
+        },
+        obj: {
+            gid: '',
+            id: '',
+            subject: '',
+            status: '',
+        },
     }),
 
     computed: {
@@ -165,69 +198,100 @@ export default {
 
     created () {
         this.getRecord();
+        this.setProp();
     },
 
-methods: {
-    getRecord () {
-        this.$axios.$post('/getRecord', {gid: this.gid} )
-        .then((records) => {
-            this.items = records;
-        })
-        .catch((err) => {
-            alert(err);
-        })
-    },
+    methods: {
+        getRecord () {
+            this.$axios.$post('/getRecord', {gid: this.gid} )
+            .then((records) => {
+                this.items = records;
+            })
+            .catch((err) => {
+                alert(err);
+            })
+        },
 
-    deleteItem (item) {
-        this.editedIndex = this.items.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialogDelete = true
-    },
+        updateRecord (item) {
+            this.obj.id = item.id;
+            this.obj.subject = item.subject;
+            this.obj.status = item.status;
+            this.$axios.$post('/save', {obj: this.obj})
+            .then ((records) => {
+                this.items = records;
+            })
+            .catch ((err) => {
+                console.log(err);
+            })
+        },
 
-    deleteItemConfirm () {
-        this.items.splice(this.editedIndex, 1)
-        this.closeDelete()
-    },
+        deleteItem (item) {
+            this.editedIndex = this.items.indexOf(item)
+            this.editedItem = Object.assign({}, item)
+            this.dialogDelete = true
+        },
 
-    close () {
-        this.dialog = false
-        this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-        })
-    },
+        deleteItemConfirm () {
+            this.items.splice(this.editedIndex, 1)
+            this.closeDelete()
+        },
 
-    closeDelete () {
-        this.dialogDelete = false
-        this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-        })
-    },
+        close () {
+            this.dialog = false
+            this.$nextTick(() => {
+            this.editedItem = Object.assign({}, this.defaultItem)
+            this.editedIndex = -1
+            })
+        },
 
-    // save () {
-    //     if (this.editedIndex > -1) {
-    //     Object.assign(this.items[this.editedIndex], this.editedItem)
-    //     } else {
-    //     this.items.push(this.editedItem)
-    //     }
-    //     this.close()
-    // },
-    save () {
-        this.$axios.$post('/save', { newItem: this.newItem })
-        .then((records) => {
-            this.items = records;
-        })
-        .catch((err) => {
-            alert(err);
-        })
+        closeDelete () {
+            this.dialogDelete = false
+            this.$nextTick(() => {
+            this.editedItem = Object.assign({}, this.defaultItem)
+            this.editedIndex = -1
+            })
+        },
+
+        // save () {
+        //     if (this.editedIndex > -1) {
+        //     Object.assign(this.items[this.editedIndex], this.editedItem)
+        //     } else {
+        //     this.items.push(this.editedItem)
+        //     }
+        //     this.close()
+        // },
+        save () {
+            this.$axios.$post('/save', { newItem: this.newItem })
+            .then((records) => {
+                this.items = records;
+            })
+            .catch((err) => {
+                alert(err);
+            })
+        },
+
+        getColor (status) {
+            if (status === 'Open') return '#F44336'
+            else if (status === 'Pending')  return '#FF9800'
+            else return '#9E9E9E'
+        },
+
+        //Can't assign props: ['gid'] to this.gid in data(). For that reason, this function was created.
+        setProp () {
+            this.obj.gid = this.gid;
+        },
+
+        add () {
+
+        }
     }
-    },
 }
+
 </script>
 
 <style>
 .add-btn {
     margin-right: 20px;
 }
+
 </style>
