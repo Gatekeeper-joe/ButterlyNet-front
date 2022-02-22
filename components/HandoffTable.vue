@@ -12,6 +12,7 @@
                         loading
                         loading-text="Loading... Please wait"
                         sort-by="id"
+                        sort-desc="true"
                         show-expand
                         class="elevation-1"
                     >
@@ -37,7 +38,7 @@
                                                             mdi-new-box
                                                         </v-icon>
                                                     </v-btn>
-                                                    <b-modal id="modal-center" size="lg" centered v-model="dialog">
+                                                    <b-modal id="modal-center" size="lg" centered v-model="dialog" ok-title="Create">
                                                         <!-- 引継ぎを作成する段階ではステータスをいじれる必要がないのでコメントアウト。内容変更する際に以下のコードは使いそうだから残しておく。 -->
                                                         <!-- <v-row>
                                                             <v-col class="d-flex pb-0" sm="3">
@@ -53,13 +54,23 @@
                                                             <v-col>
                                                                 <v-textarea
                                                                     outlined
-                                                                    label="Please enter the body text."
                                                                     v-model="newItem.body"
                                                                     height="240"
                                                                 >
                                                                 </v-textarea>
                                                             </v-col>
                                                         </v-row>
+                                                        <template #modal-footer="{ cancel }">
+                                                            <b-button @click="cancel()">
+                                                                Cancel
+                                                            </b-button>
+                                                            <b-button @click="create()" variant="primary">
+                                                                Create
+                                                            </b-button>
+                                                            <v-snackbar v-model="snackbar" dark color="#00BB00" timeout="1">
+                                                                Record saved succesfully!
+                                                            </v-snackbar>
+                                                        </template>
                                                     </b-modal>
                                                 </div>
                                             </template>
@@ -99,12 +110,20 @@
                             </v-chip>
                         </template>
                         <template v-slot:[`item.actions`]="{ item }">
-                            <v-icon small @click="deleteItem(item)">
+                            <v-icon small @click="deleteItemConfirm(item)">
                                 mdi-delete
                             </v-icon>
-                        </template>
-                        <template v-slot:no-data>
-                            <span>引継ぎはありません</span>
+                            <b-modal id="modal-center" centered v-model="dialogDelete" ok-title="Delete">
+                                <p class="my-4">Are you sure you want to delete this record?</p>
+                                    <template #modal-footer="{ cancel }">
+                                        <b-button @click="cancel()">
+                                            Cancel
+                                        </b-button>
+                                        <b-button @click="deleteRecord(item)" variant="danger">
+                                            Delete
+                                        </b-button>
+                                    </template>
+                            </b-modal>
                         </template>
                     </v-data-table>
                 </template>
@@ -139,12 +158,18 @@ export default {
         dialog: false,
         dialogDelete: false,
         editedIndex: -1,
+        snackbar: false,
         newItem: {
             group_id: '',
             subject: '',
             body: '',
-            status: '',
         },
+
+        deleteItem: {
+            group_id: '',
+            id: '',
+        },
+
         obj: {
             gid: '',
             id: '',
@@ -197,15 +222,24 @@ export default {
             })
         },
 
-        deleteItem (item) {
+        deleteRecord (item) {
+            this.deleteItem.id = item.id;
+            this.$axios.$post('/delete', {deleteItem: this.deleteItem})
+            .then((records) => {
+                this.items = records;
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        },
+
+        deleteItemConfirm (item) {
             this.editedIndex = this.items.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialogDelete = true
-        },
 
-        deleteItemConfirm () {
-            this.items.splice(this.editedIndex, 1)
-            this.closeDelete()
+            // this.items.splice(this.editedIndex, 1)
+            // this.closeDelete()
         },
 
         close () {
@@ -224,24 +258,6 @@ export default {
             })
         },
 
-        // save () {
-        //     if (this.editedIndex > -1) {
-        //     Object.assign(this.items[this.editedIndex], this.editedItem)
-        //     } else {
-        //     this.items.push(this.editedItem)
-        //     }
-        //     this.close()
-        // },
-        save () {
-            this.$axios.$post('/save', { newItem: this.newItem })
-            .then((records) => {
-                this.items = records;
-            })
-            .catch((err) => {
-                alert(err);
-            })
-        },
-
         getColor (status) {
             if (status === 'Open') return '#F44336'
             else if (status === 'Pending')  return '#FF9800'
@@ -252,6 +268,7 @@ export default {
         setProp () {
             this.obj.gid = this.gid;
             this.newItem.group_id = this.gid;
+            this.deleteItem.group_id = this.gid;
         },
 
         show () {
@@ -259,15 +276,22 @@ export default {
             let date = new Date();
             let datetime = date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' +('0' + date.getDate()).slice(-2) + ' ' +  ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2);
             let uname = this.uname;
-            let prefix = datetime + ' ' + uname;
+            let prefix = datetime + ' ' + uname + "\n";
             this.newItem.body = prefix;
+        },
+
+        create () {
+            this.$axios.$post('create', {newItem: this.newItem})
+            .then((records) => {
+                this.items = records;
+                this.dialog = false;
+                this.snackbar = true;
+            })
+            .catch((err) => {
+                console.log(err);
+            })
         }
     },
-
-    // mounted() {
-    //     For enabling autofocus.
-    //     this.$nextTick(() => this.$refs.inputSubject.focus();
-    // }
 }
 
 </script>
