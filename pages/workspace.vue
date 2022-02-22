@@ -9,7 +9,7 @@
         </div>
 
         <div class="mt-5 handoff-table">
-            <HandoffTable :gid="this.gid" />
+            <HandoffTable :gid="this.gid" :uname="this.uname"/>
         </div>
     </div>
 </template>
@@ -38,6 +38,7 @@
             return {
                 user_id: this.$auth.user.id,
                 gid: this.$auth.user.group_id,
+                uname: this.$auth.user.nickname,
                 pageData: '',
                 count: '',
                 index: '',
