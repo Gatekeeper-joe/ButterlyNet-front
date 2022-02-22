@@ -5,7 +5,7 @@
 
             <div class="card-body">
                 <form method="POST" @submit.prevent="regist">
-                    <div class="form-group row">
+                    <div class="form-group row align-center">
                         <label for="url" class="col-md-3 col-form-label text-md-right card-text">URL</label>
 
                         <div class="col-md-8">
@@ -67,7 +67,7 @@ export default {
     },
 
     mounted() {
-        //autofocusを有効にする
+        //For enabling autofocus.
         this.$nextTick(() => this.$refs.inputURL.focus())
     }
 }
