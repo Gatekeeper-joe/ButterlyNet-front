@@ -1,7 +1,7 @@
 <template>
     <div class="col-md-7">
         <div class="card mt-5">
-            <div class="card-header card-text">URL登録</div>
+            <div class="card-header card-text">Regist URL</div>
 
             <div class="card-body">
                 <form method="POST" @submit.prevent="regist">
@@ -9,7 +9,7 @@
                         <label for="url" class="col-md-3 col-form-label text-md-right card-text">URL</label>
 
                         <div class="col-md-8">
-                            <input id="url" type="text" class="form-control" :class="duplication ? 'is-invalid': null" name="url" placeholder="更新確認したいページのURLを入力してください" ref="inputURL" required autofocus v-model="data.url">
+                            <input id="url" type="text" class="form-control" :class="duplication ? 'is-invalid': null" name="url" placeholder="Please enter the URL." ref="inputURL" required autofocus v-model="data.url">
                             <span class="invalidFeedback" v-if="duplication">
                                 <strong >{{ message }}</strong>
                             </span>
