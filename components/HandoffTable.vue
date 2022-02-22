@@ -31,53 +31,38 @@
                                     <v-col cols="6" class="text-center">
                                         <v-col cols="6">
                                             <template>
-                                                    <v-btn color="#00BB00" dark class="mb-2" @click="save">
+                                                <div>
+                                                    <v-btn color="#000000" dark class="mb-2" @click="show()">
                                                         <v-icon size="32" class="pr-5">
                                                             mdi-new-box
                                                         </v-icon>
                                                     </v-btn>
+                                                    <b-modal id="modal-center" size="lg" centered v-model="dialog">
+                                                        <!-- 引継ぎを作成する段階ではステータスをいじれる必要がないのでコメントアウト。内容変更する際に以下のコードは使いそうだから残しておく。 -->
+                                                        <!-- <v-row>
+                                                            <v-col class="d-flex pb-0" sm="3">
+                                                                <v-select :items="status" label="Open"></v-select>
+                                                            </v-col>
+                                                        </v-row> -->
+                                                        <v-row class="mb-1">
+                                                            <v-col cols="10" class="pt-0">
+                                                                <v-text-field label="Subject" autofocus v-model="newItem.subject"></v-text-field>
+                                                            </v-col>
+                                                        </v-row>
+                                                        <v-row class="mb-1">
+                                                            <v-col>
+                                                                <v-textarea
+                                                                    outlined
+                                                                    label="Please enter the body text."
+                                                                    v-model="newItem.body"
+                                                                    height="240"
+                                                                >
+                                                                </v-textarea>
+                                                            </v-col>
+                                                        </v-row>
+                                                    </b-modal>
+                                                </div>
                                             </template>
-                                            <v-dialog v-model="dialog" max-width="500px">
-                                                <v-card>
-                                                    <v-card-title>
-                                                        <span class="text-h5">{{ formTitle }}</span>
-                                                    </v-card-title>
-
-                                                    <v-card-text>
-                                                        <v-container>
-                                                            <v-row>
-                                                                <v-col cols="12" sm="6" md="4">
-                                                                    <v-text-field v-model="editedItem.subject" label="Subject"></v-text-field>
-                                                                </v-col>
-                                                                <v-col cols="12" sm="6" md="4">
-                                                                    <v-text-field v-model="editedItem.body"></v-text-field>
-                                                                </v-col>
-                                                            </v-row>
-                                                        </v-container>
-                                                    </v-card-text>
-
-                                                    <v-card-actions>
-                                                        <v-spacer></v-spacer>
-                                                        <v-btn color="blue darken-1" text @click="save">
-                                                            Save
-                                                        </v-btn>
-                                                        <v-btn color="blue darken-1" text @click="close">
-                                                            Cancel
-                                                        </v-btn>
-                                                    </v-card-actions>
-                                                </v-card>
-                                            </v-dialog>
-                                            <v-dialog v-model="dialogDelete" max-width="500px">
-                                                <v-card>
-                                                    <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
-                                                    <v-card-actions>
-                                                    <v-spacer></v-spacer>
-                                                    <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                                                    <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
-                                                    <v-spacer></v-spacer>
-                                                    </v-card-actions>
-                                                </v-card>
-                                            </v-dialog>
                                         </v-col>
                                     </v-col>
                                 </v-row>
@@ -87,12 +72,6 @@
                             <td :colspan="4">
                                 {{ item.body }}
                             </td>
-                            <v-btn depressed color="#795548" dark @click="add">
-                                Add
-                            </v-btn>
-                            <v-btn depressed color="#000000" dark @click="updateBody">
-                                Update
-                            </v-btn>
                         </template>
                         <template v-slot:[`item.subject`]="{ item }">
                             <v-edit-dialog
@@ -138,7 +117,7 @@
 const axios = require('axios');
 
 export default {
-    props: ['gid'],
+    props: ['gid', 'uname'],
 
     data: () => ({
         headers: [
@@ -151,6 +130,7 @@ export default {
         ],
         items: [],
         expanded: [],
+        status: ['Open', 'Pending', 'Close'],
 
         search: '',
 
@@ -159,19 +139,11 @@ export default {
         dialog: false,
         dialogDelete: false,
         editedIndex: -1,
-        editedItem: {
-            subject: '',
-            body: '',
-        },
-        defaultItem: {
-            subject: '',
-            body: '',
-        },
         newItem: {
-            group_id: '1',
-            status: 'Close',
-            subject: '手順書作成',
-            body: '障害対応の手順書が未完成のため、対応お願いいたします。',
+            group_id: '',
+            subject: '',
+            body: '',
+            status: '',
         },
         obj: {
             gid: '',
@@ -279,12 +251,23 @@ export default {
         //Can't assign props: ['gid'] to this.gid in data(). For that reason, this function was created.
         setProp () {
             this.obj.gid = this.gid;
+            this.newItem.group_id = this.gid;
         },
 
-        add () {
-
+        show () {
+            this.dialog = true;
+            let date = new Date();
+            let datetime = date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' +('0' + date.getDate()).slice(-2) + ' ' +  ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2);
+            let uname = this.uname;
+            let prefix = datetime + ' ' + uname;
+            this.newItem.body = prefix;
         }
-    }
+    },
+
+    // mounted() {
+    //     For enabling autofocus.
+    //     this.$nextTick(() => this.$refs.inputSubject.focus();
+    // }
 }
 
 </script>
@@ -292,6 +275,14 @@ export default {
 <style>
 .add-btn {
     margin-right: 20px;
+}
+
+.col-6 {
+    padding: 0;
+}
+
+.v-messages__message {
+    color: red;
 }
 
 </style>
