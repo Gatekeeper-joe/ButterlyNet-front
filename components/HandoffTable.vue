@@ -39,22 +39,21 @@
                                                         </v-icon>
                                                     </v-btn>
                                                     <b-modal id="modal-center" size="lg" centered v-model="dialog" ok-title="Create">
-                                                        <!-- 引継ぎを作成する段階ではステータスをいじれる必要がないのでコメントアウト。内容変更する際に以下のコードは使いそうだから残しておく。 -->
-                                                        <!-- <v-row>
+                                                        <v-row v-if="updateFlag">
                                                             <v-col class="d-flex pb-0" sm="3">
-                                                                <v-select :items="status" label="Open"></v-select>
+                                                                <v-select :items="status" :label="editedItem.status"></v-select>
                                                             </v-col>
-                                                        </v-row> -->
+                                                        </v-row>
                                                         <v-row class="mb-1">
                                                             <v-col cols="10" class="pt-0">
-                                                                <v-text-field label="Subject" autofocus v-model="newItem.subject"></v-text-field>
+                                                                <v-text-field label="Subject" autofocus v-model="editedItem.subject"></v-text-field>
                                                             </v-col>
                                                         </v-row>
                                                         <v-row class="mb-1">
                                                             <v-col>
                                                                 <v-textarea
                                                                     outlined
-                                                                    v-model="newItem.body"
+                                                                    v-model="editedItem.body"
                                                                     height="240"
                                                                 >
                                                                 </v-textarea>
@@ -110,6 +109,19 @@
                             </v-chip>
                         </template>
                         <template v-slot:[`item.actions`]="{ item }">
+                            <v-icon small class="mr-2" @click="editItem(item)">
+                                mdi-pencil
+                            </v-icon>
+                            <b-modal id="modal-center" centered v-model="updateDialog" ok-title="Update">
+                                    <template #modal-footer="{ cancel }">
+                                        <b-button @click="cancel()">
+                                            Cancel
+                                        </b-button>
+                                        <b-button @click="updateRecord(item)" variant="danger">
+                                            Update
+                                        </b-button>
+                                    </template>
+                            </b-modal>
                             <v-icon small @click="deleteItemConfirm(item)">
                                 mdi-delete
                             </v-icon>
@@ -157,13 +169,16 @@ export default {
 
         dialog: false,
         dialogDelete: false,
+        updateDialog: false,
+        updateFlag: false,
         editedIndex: -1,
-        snackbar: false,
-        newItem: {
+        editedItem: {
             group_id: '',
+            status: '',
             subject: '',
             body: '',
         },
+        snackbar: false,
 
         deleteItem: {
             group_id: '',
@@ -177,12 +192,6 @@ export default {
             status: '',
         },
     }),
-
-    computed: {
-        formTitle () {
-            return this.editedIndex === -1 ? 'New Handoff' : 'Edit Handoff'
-        },
-    },
 
     watch: {
         dialog (val) {
@@ -222,24 +231,32 @@ export default {
             })
         },
 
+        deleteItemConfirm (item) {
+            this.editedIndex = this.items.indexOf(item)
+            this.deleteItem = Object.assign({}, item)
+            this.dialogDelete = true
+
+            // this.items.splice(this.editedIndex, 1)
+            // this.closeDelete()
+        },
+
         deleteRecord (item) {
-            this.deleteItem.id = item.id;
             this.$axios.$post('/delete', {deleteItem: this.deleteItem})
-            .then((records) => {
-                this.items = records;
+            .then(() => {
+                this.items.splice(this.editedIndex, 1);
+                this.closeDelete()
             })
             .catch((err) => {
                 console.log(err);
             })
         },
 
-        deleteItemConfirm (item) {
-            this.editedIndex = this.items.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.dialogDelete = true
-
-            // this.items.splice(this.editedIndex, 1)
-            // this.closeDelete()
+        closeDelete () {
+            this.dialogDelete = false;
+            this.$nextTick(() => {
+            this.editedItem = Object.assign({}, this.defaultItem)
+            this.editedIndex = -1
+            })
         },
 
         close () {
@@ -253,7 +270,6 @@ export default {
         closeDelete () {
             this.dialogDelete = false
             this.$nextTick(() => {
-            this.editedItem = Object.assign({}, this.defaultItem)
             this.editedIndex = -1
             })
         },
@@ -267,8 +283,8 @@ export default {
         //Can't assign props: ['gid'] to this.gid in data(). For that reason, this function was created.
         setProp () {
             this.obj.gid = this.gid;
-            this.newItem.group_id = this.gid;
-            this.deleteItem.group_id = this.gid;
+            this.editedItem.group_id = this.gid;
+            this.deleteItem.group_id = this.gid; //deleteConfirm()内のassignメソッドで割り当てられる可能性があるからここの処理は不要かも。
         },
 
         show () {
@@ -277,11 +293,11 @@ export default {
             let datetime = date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' +('0' + date.getDate()).slice(-2) + ' ' +  ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2);
             let uname = this.uname;
             let prefix = datetime + ' ' + uname + "\n";
-            this.newItem.body = prefix;
+            this.editedItem.body = prefix;
         },
 
         create () {
-            this.$axios.$post('create', {newItem: this.newItem})
+            this.$axios.$post('create', {editedItem: this.editedItem})
             .then((records) => {
                 this.items = records;
                 this.dialog = false;
@@ -290,6 +306,12 @@ export default {
             .catch((err) => {
                 console.log(err);
             })
+        },
+        editItem (item) {
+            this.editedIndex = this.items.indexOf(item)
+            this.editedItem = Object.assign({}, item)
+            this.updateFlag = true;
+            this.dialog = true;
         }
     },
 }
