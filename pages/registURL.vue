@@ -19,7 +19,7 @@
                     <div class="form-group row mb-0 form-lower-part">
                         <div class="col-md-12 text-center">
                             <button type="submit" class="btn btn-primary">
-                                登録
+                                Regist
                             </button>
                         </div>
                     </div>
