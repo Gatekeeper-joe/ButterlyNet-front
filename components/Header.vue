@@ -1,7 +1,7 @@
 <template>
     <div class="">
         <nuxt-link class="header-link" to="/">
-            <span class="title">Butterfly.Net</span>
+            <span class="header-title">Butterfly.Net</span>
         </nuxt-link>
     </div>
 </template>
@@ -16,7 +16,7 @@
         padding: 10px;
     }
 
-    .title {
+    .header-title {
         color: white;
         font-size: 4rem;
     }
