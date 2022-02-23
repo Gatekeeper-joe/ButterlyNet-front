@@ -1,20 +1,20 @@
 <template>
     <div class="col-md-7">
         <div class="card mt-5">
-            <div class="card-header card-text">ログイン</div>
+            <div class="card-header card-text">Login</div>
 
             <div class="card-body">
                 <form method="POST" @submit.prevent="login">
-                    <div class="form-group row">
-                        <label for="nickname" class="col-md-4 col-form-label text-md-right card-text">ニックネーム</label>
+                    <div class="form-group row align-center">
+                        <label for="nickname" class="col-md-4 col-form-label text-md-right card-text">Nickname</label>
 
                         <div class="col-md-6">
                             <input id="nickname" type="text" class="form-control" name="nickname" required autocomplete="nickname" autofocus v-model="auth.nickname">
                         </div>
                     </div>
 
-                    <div class="form-group row">
-                        <label for="password" class="col-md-4 col-form-label text-md-right card-text">パスワード</label>
+                    <div class="form-group row align-center">
+                        <label for="password" class="col-md-4 col-form-label text-md-right card-text">Password</label>
 
                         <div class="col-md-6">
                             <input id="password" type="password" class="form-control" name="password" required autocomplete="current-password" v-model="auth.password">
@@ -24,7 +24,7 @@
                     <div class="form-group row justify-content-center">
                         <div class="col-md-6" v-if="validation.message">
                             <span class="invalidfeedback">
-                                <strong>メールアドレスまたはパスワードが違います</strong>
+                                <strong>Mail address or password is wrong</strong>
                             </span>
                         </div>
                     </div>
@@ -32,11 +32,11 @@
                     <div class="form-group row mb-0 form-lower-part">
                         <div class="col-md-8 offset-md-4">
                             <button type="submit" class="btn btn-primary">
-                                ログイン
+                                Login
                             </button>
 
                             <nuxt-link class="btn btn-link" to="reset" v-bind:disabled="processing">
-                                パスワードを忘れた場合
+                                Forgot your password
                             </nuxt-link>
                         </div>
                     </div>
