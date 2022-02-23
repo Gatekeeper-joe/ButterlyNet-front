@@ -72,6 +72,7 @@
 
     .nav-list {
         padding: 0;
+        padding-left: 0px !important;
         margin: 0 auto;
         position: relative;
         background-color: var(--nav-background-color);
