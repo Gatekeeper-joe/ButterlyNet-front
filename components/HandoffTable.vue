@@ -9,7 +9,6 @@
                         :items="items"
                         :search="search"
                         :expanded.sync="expanded"
-                        loading
                         loading-text="Loading... Please wait"
                         sort-by="id"
                         sort-desc="true"
@@ -34,11 +33,11 @@
                                             <template>
                                                 <div>
                                                     <v-btn color="#000000" dark class="mb-2" @click="show()">
-                                                        <v-icon size="32" class="pr-5">
+                                                        <v-icon size="32">
                                                             mdi-new-box
                                                         </v-icon>
                                                     </v-btn>
-                                                    <b-modal id="modal-center" size="lg" centered v-model="dialog" ok-title="Create">
+                                                    <b-modal id="modal-center" size="lg" centered v-model="dialog" ok-title="Create" @hidden="updateFlag=false">
                                                         <v-row v-if="updateFlag">
                                                             <v-col class="d-flex pb-0" sm="3">
                                                                 <v-select :items="status" :label="editedItem.status"></v-select>
@@ -59,7 +58,15 @@
                                                                 </v-textarea>
                                                             </v-col>
                                                         </v-row>
-                                                        <template #modal-footer="{ cancel }">
+                                                        <template #modal-footer="{ cancel }" v-if="updateFlag">
+                                                            <b-button @click="cancel()">
+                                                                Cancel
+                                                            </b-button>
+                                                            <b-button @click="updateRecord()" variant="danger">
+                                                                Update
+                                                            </b-button>
+                                                        </template>
+                                                        <template #modal-footer="{ cancel }" v-else>
                                                             <b-button @click="cancel()">
                                                                 Cancel
                                                             </b-button>
@@ -83,23 +90,6 @@
                                 {{ item.body }}
                             </td>
                         </template>
-                        <template v-slot:[`item.subject`]="{ item }">
-                            <v-edit-dialog
-                                :return-value.sync="item.subject"
-                                >
-                                {{ item.subject }}
-                                <template v-slot:input>
-                                    <v-text-field
-                                    v-model="item.subject"
-                                    @change="updateRecord(item)"
-                                    :rules="[max25chars]"
-                                    label="Edit"
-                                    single-line
-                                    counter
-                                    ></v-text-field>
-                                </template>
-                            </v-edit-dialog>
-                        </template>
                         <template v-slot:[`item.status`]="{ item }">
                             <v-chip
                                 :color="getColor(item.status)"
@@ -112,20 +102,25 @@
                             <v-icon small class="mr-2" @click="editItem(item)">
                                 mdi-pencil
                             </v-icon>
-                            <b-modal id="modal-center" centered v-model="updateDialog" ok-title="Update">
-                                    <template #modal-footer="{ cancel }">
+                            <b-modal id="modal-center"
+                                centered
+                                v-model="updateDialog"
+                                ok-title="Update"
+                                @hidden="updateFlag=false"
+                            >
+                                    <!-- <template #modal-footer="{ cancel }">
                                         <b-button @click="cancel()">
                                             Cancel
                                         </b-button>
-                                        <b-button @click="updateRecord(item)" variant="danger">
+                                        <b-button @click="updateRecord()" variant="danger">
                                             Update
                                         </b-button>
-                                    </template>
+                                    </template> -->
                             </b-modal>
                             <v-icon small @click="deleteItemConfirm(item)">
                                 mdi-delete
                             </v-icon>
-                            <b-modal id="modal-center" centered v-model="dialogDelete" ok-title="Delete">
+                            <b-modal id="modal-center" centered v-model="dialogDelete" ok-title="Delete" size="sm">
                                 <p class="my-4">Are you sure you want to delete this record?</p>
                                     <template #modal-footer="{ cancel }">
                                         <b-button @click="cancel()">
@@ -141,6 +136,7 @@
                 </template>
             </v-row>
         </v-container>
+        {{ this.editedItem }}
     </div>
 </template>
 
@@ -184,13 +180,6 @@ export default {
             group_id: '',
             id: '',
         },
-
-        obj: {
-            gid: '',
-            id: '',
-            subject: '',
-            status: '',
-        },
     }),
 
     watch: {
@@ -218,11 +207,8 @@ export default {
             })
         },
 
-        updateRecord (item) {
-            this.obj.id = item.id;
-            this.obj.subject = item.subject;
-            this.obj.status = item.status;
-            this.$axios.$post('/save', {obj: this.obj})
+        updateRecord () {
+            this.$axios.$post('/update', {editedItem: this.editedItem})
             .then ((records) => {
                 this.items = records;
             })
@@ -240,7 +226,7 @@ export default {
             // this.closeDelete()
         },
 
-        deleteRecord (item) {
+        deleteRecord () {
             this.$axios.$post('/delete', {deleteItem: this.deleteItem})
             .then(() => {
                 this.items.splice(this.editedIndex, 1);
@@ -282,21 +268,23 @@ export default {
 
         //Can't assign props: ['gid'] to this.gid in data(). For that reason, this function was created.
         setProp () {
-            this.obj.gid = this.gid;
             this.editedItem.group_id = this.gid;
             this.deleteItem.group_id = this.gid; //deleteConfirm()内のassignメソッドで割り当てられる可能性があるからここの処理は不要かも。
         },
 
         show () {
-            this.dialog = true;
+            this.initialize();
             let date = new Date();
             let datetime = date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' +('0' + date.getDate()).slice(-2) + ' ' +  ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2);
             let uname = this.uname;
             let prefix = datetime + ' ' + uname + "\n";
             this.editedItem.body = prefix;
+            this.dialog = true;
         },
 
         create () {
+            alert(this.editedItem);
+            return;
             this.$axios.$post('create', {editedItem: this.editedItem})
             .then((records) => {
                 this.items = records;
@@ -312,6 +300,14 @@ export default {
             this.editedItem = Object.assign({}, item)
             this.updateFlag = true;
             this.dialog = true;
+        },
+        initialize () {
+            this.editedItem = {
+                group_id: '',
+                status: '',
+                subject: '',
+                body: '',
+            }
         }
     },
 }
