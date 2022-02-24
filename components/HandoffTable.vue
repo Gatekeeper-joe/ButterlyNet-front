@@ -11,13 +11,13 @@
                         :expanded.sync="expanded"
                         loading-text="Loading... Please wait"
                         sort-by="id"
-                        sort-desc="true"
+                        :sort-desc="true"
                         show-expand
                         class="elevation-1"
                     >
                         <template v-slot:top>
                             <v-toolbar flat>
-                                <v-row>
+                                <v-row class="pt-4">
                                     <v-col cols="6">
                                         <v-row class="pa-6">
                                             <v-text-field
@@ -32,7 +32,7 @@
                                         <v-col cols="6">
                                             <template>
                                                 <div>
-                                                    <v-btn color="#000000" dark class="mb-2" @click="show()">
+                                                    <v-btn color="#000000" dark class="mt-4" @click="show()">
                                                         <v-icon size="32">
                                                             mdi-new-box
                                                         </v-icon>
@@ -40,7 +40,7 @@
                                                     <b-modal id="modal-center" size="lg" centered v-model="dialog" ok-title="Create" @hidden="updateFlag=false">
                                                         <v-row v-if="updateFlag">
                                                             <v-col class="d-flex pb-0" sm="3">
-                                                                <v-select :items="status" :label="editedItem.status"></v-select>
+                                                                <v-select :items="status" :label="editedItem.status" v-model="editedItem.status"></v-select>
                                                             </v-col>
                                                         </v-row>
                                                         <v-row class="mb-1">
@@ -86,9 +86,7 @@
                             </v-toolbar>
                         </template>
                         <template v-slot:expanded-item="{ item }">
-                            <td :colspan="4">
-                                {{ item.body }}
-                            </td>
+                            <td :colspan="4" style="white-space:pre-wrap;">{{ item.body }}</td>
                         </template>
                         <template v-slot:[`item.status`]="{ item }">
                             <v-chip
@@ -108,19 +106,11 @@
                                 ok-title="Update"
                                 @hidden="updateFlag=false"
                             >
-                                    <!-- <template #modal-footer="{ cancel }">
-                                        <b-button @click="cancel()">
-                                            Cancel
-                                        </b-button>
-                                        <b-button @click="updateRecord()" variant="danger">
-                                            Update
-                                        </b-button>
-                                    </template> -->
                             </b-modal>
                             <v-icon small @click="deleteItemConfirm(item)">
                                 mdi-delete
                             </v-icon>
-                            <b-modal id="modal-center" centered v-model="dialogDelete" ok-title="Delete" size="sm">
+                            <b-modal id="modal-center" centered v-model="dialogDelete" ok-title="Delete">
                                 <p class="my-4">Are you sure you want to delete this record?</p>
                                     <template #modal-footer="{ cancel }">
                                         <b-button @click="cancel()">
@@ -136,7 +126,6 @@
                 </template>
             </v-row>
         </v-container>
-        {{ this.editedItem }}
     </div>
 </template>
 
@@ -167,7 +156,7 @@ export default {
         dialogDelete: false,
         updateDialog: false,
         updateFlag: false,
-        editedIndex: -1,
+        editedIndex: '',
         editedItem: {
             group_id: '',
             status: '',
@@ -211,6 +200,7 @@ export default {
             this.$axios.$post('/update', {editedItem: this.editedItem})
             .then ((records) => {
                 this.items = records;
+                this.dialog = false;
             })
             .catch ((err) => {
                 console.log(err);
@@ -221,9 +211,6 @@ export default {
             this.editedIndex = this.items.indexOf(item)
             this.deleteItem = Object.assign({}, item)
             this.dialogDelete = true
-
-            // this.items.splice(this.editedIndex, 1)
-            // this.closeDelete()
         },
 
         deleteRecord () {
@@ -237,26 +224,15 @@ export default {
             })
         },
 
-        closeDelete () {
-            this.dialogDelete = false;
-            this.$nextTick(() => {
-            this.editedItem = Object.assign({}, this.defaultItem)
-            this.editedIndex = -1
-            })
-        },
-
         close () {
             this.dialog = false
             this.$nextTick(() => {
-            this.editedItem = Object.assign({}, this.defaultItem)
-            this.editedIndex = -1
             })
         },
 
         closeDelete () {
             this.dialogDelete = false
             this.$nextTick(() => {
-            this.editedIndex = -1
             })
         },
 
@@ -273,7 +249,7 @@ export default {
         },
 
         show () {
-            this.initialize();
+            // this.initialize();
             let date = new Date();
             let datetime = date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' +('0' + date.getDate()).slice(-2) + ' ' +  ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2);
             let uname = this.uname;
@@ -283,8 +259,8 @@ export default {
         },
 
         create () {
-            alert(this.editedItem);
-            return;
+            this.editedItem.group_id = this.gid;
+            this.editedItem.status = '';
             this.$axios.$post('create', {editedItem: this.editedItem})
             .then((records) => {
                 this.items = records;
@@ -301,14 +277,14 @@ export default {
             this.updateFlag = true;
             this.dialog = true;
         },
-        initialize () {
-            this.editedItem = {
-                group_id: '',
-                status: '',
-                subject: '',
-                body: '',
-            }
-        }
+        // initialize () {
+        //     this.editedItem = {
+        //         group_id: '',
+        //         status: '',
+        //         subject: '',
+        //         body: '',
+        //     }
+        // }
     },
 }
 
@@ -325,6 +301,11 @@ export default {
 
 .v-messages__message {
     color: red;
+}
+
+.modal-backdrop {
+    background-color: #000;
+    opacity: 0.5 !important;
 }
 
 </style>
