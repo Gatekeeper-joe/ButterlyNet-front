@@ -94,13 +94,13 @@
         padding: 1.15rem 0.9rem;
         display: flex;
         align-items: center;
-        color: var(--link-text-color);
+        color: var(--link-text-color) !important;
         text-decoration: none;
     }
 
     .nav-link:hover,
     .nav-link.active {
-        color: var(--active-color);
+        color: var(--active-color) !important;
         background-color: var(--active-background-color);
     }
 
