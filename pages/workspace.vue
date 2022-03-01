@@ -2,8 +2,8 @@
     <div class="workspace">
         <Navbar />
         <div class="a-dashboard d-flex">
-            <div class="col-md-7">
-                <span class="mt-3">reserved</span>
+            <div class="col-md-7 d-flex just-center">
+                <Graph :data="data" :options="options" />
             </div>
             <UpdatedPageTable />
         </div>
@@ -19,12 +19,14 @@
     import Navbar from "~/components/Navbar"
     import UpdatedPageTable from "~/components/UpdatedPageTable"
     import HandoffTable from "~/components/HandoffTable"
+    import Graph from "~/components/Graph"
 
     export default {
         components: {
             Navbar,
             HandoffTable,
             UpdatedPageTable,
+            Graph,
         },
 
         middleware: ['auth'],
