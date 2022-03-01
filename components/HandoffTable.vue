@@ -73,9 +73,6 @@
                                                             <b-button @click="create()" variant="primary">
                                                                 Create
                                                             </b-button>
-                                                            <v-snackbar v-model="snackbar" dark color="#00BB00" timeout="1">
-                                                                Record saved succesfully!
-                                                            </v-snackbar>
                                                         </template>
                                                     </b-modal>
                                                 </div>
@@ -110,14 +107,14 @@
                             <v-icon small @click="deleteItemConfirm(item)">
                                 mdi-delete
                             </v-icon>
-                            <b-modal id="modal-center" centered v-model="dialogDelete" ok-title="Delete">
+                            <b-modal id="modal-center" centered v-model="deleteDialog" ok-title="Delete">
                                 <p class="my-4">Are you sure you want to delete this record?</p>
                                     <template #modal-footer="{ cancel }">
                                         <b-button @click="cancel()">
                                             Cancel
                                         </b-button>
                                         <b-button @click="deleteRecord(item)" variant="danger">
-                                            Delete
+                                            OK
                                         </b-button>
                                     </template>
                             </b-modal>
@@ -153,7 +150,7 @@ export default {
         max25chars: v => v.length <= 25 || 'Input too long!',
 
         dialog: false,
-        dialogDelete: false,
+        deleteDialog: false,
         updateDialog: false,
         updateFlag: false,
         editedIndex: '',
@@ -163,7 +160,13 @@ export default {
             subject: '',
             body: '',
         },
-        snackbar: false,
+
+        defaultItem: {
+            group_id: '',
+            status: '',
+            subject: '',
+            body: '',
+        },
 
         deleteItem: {
             group_id: '',
@@ -175,7 +178,7 @@ export default {
         dialog (val) {
             val || this.close()
         },
-        dialogDelete (val) {
+        deleteDialog (val) {
             val || this.closeDelete()
         },
     },
@@ -210,7 +213,7 @@ export default {
         deleteItemConfirm (item) {
             this.editedIndex = this.items.indexOf(item)
             this.deleteItem = Object.assign({}, item)
-            this.dialogDelete = true
+            this.deleteDialog = true
         },
 
         deleteRecord () {
@@ -225,15 +228,15 @@ export default {
         },
 
         close () {
-            this.dialog = false
+            this.dialog = false,
             this.$nextTick(() => {
+            this.editedItem = Object.assign({}, this.defaultItem)
             })
         },
 
         closeDelete () {
-            this.dialogDelete = false
-            this.$nextTick(() => {
-            })
+            this.deleteDialog = false
+            this.editedItem = Object.assign({}, this.defaultItem)
         },
 
         getColor (status) {
@@ -249,7 +252,6 @@ export default {
         },
 
         show () {
-            // this.initialize();
             let date = new Date();
             let datetime = date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' +('0' + date.getDate()).slice(-2) + ' ' +  ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2);
             let uname = this.uname;
@@ -265,7 +267,6 @@ export default {
             .then((records) => {
                 this.items = records;
                 this.dialog = false;
-                this.snackbar = true;
             })
             .catch((err) => {
                 console.log(err);
@@ -277,14 +278,6 @@ export default {
             this.updateFlag = true;
             this.dialog = true;
         },
-        // initialize () {
-        //     this.editedItem = {
-        //         group_id: '',
-        //         status: '',
-        //         subject: '',
-        //         body: '',
-        //     }
-        // }
     },
 }
 
@@ -301,11 +294,6 @@ export default {
 
 .v-messages__message {
     color: red;
-}
-
-.modal-backdrop {
-    background-color: #000;
-    opacity: 0.5 !important;
 }
 
 </style>
