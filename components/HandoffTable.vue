@@ -1,5 +1,3 @@
-handofftable.vue > 編集前
-
 <template>
     <div class="col-md-12">
         <v-container>
@@ -247,7 +245,7 @@ export default {
             else return '#9E9E9E'
         },
 
-        //Can't assign props: ['gid'] to this.gid in data(). For that reason, this function was created.
+        //Can't assign prop: ['gid'] to this.gid in data(). For that reason, this function was created.
         setProp () {
             this.editedItem.group_id = this.gid;
             this.deleteItem.group_id = this.gid; //deleteConfirm()内のassignメソッドで割り当てられる可能性があるからここの処理は不要かも。
