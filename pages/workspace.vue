@@ -3,14 +3,16 @@
         <Navbar />
         <div class="a-dashboard d-flex">
             <div class="col-md-7 d-flex just-center">
-                <Graph :data="data" :options="options" />
+                <Graph :gid="gid" :countArr="countArr"/>
+
             </div>
             <UpdatedPageTable />
         </div>
 
         <div class="mt-5 handoff-table">
-            <HandoffTable :gid="this.gid" :uname="this.uname"/>
+            <HandoffTable :gid="gid" :uname="uname"/>
         </div>
+        {{ countArr }}
     </div>
 </template>
 
@@ -44,9 +46,9 @@
                 pageData: '',
                 count: '',
                 index: '',
-                handoffItems: [],
                 editedItem: '',
                 editedIndex: '',
+                countArr: '',
             }
         },
 
@@ -54,6 +56,36 @@
             displayIcon () {
                 this.hover = true;
             },
+
+            getRecord () {
+                this.$axios.$post('/getRecord', {gid: this.gid} )
+                .then((records) => {
+                    let openCount = 0;
+                    let pendingCount = 0;
+                    let closeCount = 0;
+
+                    records.forEach(obj => {
+                        if (obj.status === 'Open') {
+                            openCount += 1;
+                        } else if (obj.status === 'Pending') {
+                            pendingCount += 1;
+                        } else {
+                            closeCount += 1;
+                        }
+                    });
+
+                    let countArr = [openCount, pendingCount, closeCount];
+                    this.countArr = countArr;
+                    return;
+                })
+                .catch((err) => {
+                    alert(err);
+                })
+            },
+        },
+
+        created () {
+            this.getRecord();
         },
 
         beforeRouteEnter (to, from, next) {
@@ -73,32 +105,36 @@
 </script>
 
 <style>
-.v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
-    font-size: 1.5rem;
-    height: 50px;
-    padding: 0 15px;
-}
+    .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
+        font-size: 1.5rem;
+        height: 50px;
+        padding: 0 15px;
+    }
 
-.v-data-footer {
-    font-size: 1.4rem;
-}
+    .v-data-footer {
+        font-size: 1.4rem;
+    }
 
-.v-data-footer__select {
-    display: flex;
-    align-items: center;
-    flex: 0 0 0;
-    justify-content: flex-end;
-    white-space: nowrap;
-    margin-right: 10px;
-}
+    .v-data-footer__select {
+        display: flex;
+        align-items: center;
+        flex: 0 0 0;
+        justify-content: flex-end;
+        white-space: nowrap;
+        margin-right: 10px;
+    }
 
-.v-input {
-    font-size: 16px;
-    margin-left: 10px;
-}
+    .v-input {
+        font-size: 16px;
+        margin-left: 10px;
+    }
 
-.handoff-table {
-    margin-bottom: 100px;
-}
+    .handoff-table {
+        margin-bottom: 100px;
+    }
 
+    #doughnut-chart {
+        width: 400px !important;
+        height: 400px !important;
+    }
 </style>
