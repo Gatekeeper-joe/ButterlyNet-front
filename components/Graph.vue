@@ -3,23 +3,26 @@
 
     export default ({
         extends: Doughnut,
-        data() {
+        props: ['countArr'],
+
+        data () {
             return {
-            graphData: {
-                labels: ['Open', 'Pending', 'Close'],
-                datasets: [
-                {
-                    data: [3, 2, 5],
-                    backgroundColor: ['#F44336', '#FF9800', '#9E9E9E']
+                graphData: {
+                    labels: ['Open', 'Pending', 'Close'],
+                    datasets: [
+                        {
+                            data: this.countArr,
+                            backgroundColor: ['#F44336', '#FF9800', '#9E9E9E']
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true
                 }
-                ]
-            },
-            options: {
-                responsive: true
-            }
             }
         },
-        mounted() {
+
+        mounted () {
             this.renderChart(this.graphData, this.options)
         }
     })
