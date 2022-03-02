@@ -1,3 +1,5 @@
+handofftable.vue > 編集前
+
 <template>
     <div class="col-md-12">
         <v-container>
@@ -136,7 +138,7 @@ export default {
         headers: [
             { text: 'ID', align: 'center',value: 'id'},
             { text: 'Subject', value: 'subject', width: 450},
-            { text: 'Status', value: 'status', sortable: false},
+            { text: 'Status', value: 'status'},
             { text: 'Created Time', value: 'created_at', filterable: false },
             { text: 'Updated Time', value: 'updated_at', filterable: false },
             { text: '', value: 'actions', sortable: false, filterable: false},
