@@ -44,80 +44,27 @@
                 pageData: '',
                 count: '',
                 index: '',
-                items: [],
+                handoffItems: [],
                 editedItem: '',
                 editedIndex: '',
-
-                hostTableHeaders: [
-                    {text: '', value: 'count'},
-                    {text: 'Updated page', value: 'host'},
-                    {text: 'Updated time', value: 'last_updated_at'},
-                    {text: '', value: 'actions', sortable: false},
-                ],
-
-                updateTarget: {
-                    uid: this.$auth.user.id,
-                    host: '',
-                },
             }
         },
 
         methods: {
-            getUpdated () {
-                this.$axios.$post('/getUpdated', { uid: this.user_id })
-                .then((pageData) => {
-                    this.pageData = pageData;
-                    this.count = this.pageData.length;
-                    this.pageData.forEach((v, i) => {
-                        i += 1;
-                        v['count'] = i;
-                        this.items.push(v);
-                    })
-                })
-                .catch ((err) => {
-                    this.result = err;
-                })
-            },
-
             displayIcon () {
                 this.hover = true;
             },
-
-            deleteItem (item) {
-                this.index = this.items.indexOf(item);
-                this.items.splice(this.index, 1);
-                this.count = this.items.length;
-                this.items.forEach((v, i) => {
-                    i += 1;
-                    v['count'] = i;
-                });
-
-                this.updateTarget.host = item.host;
-
-                this.$axios.$post('/updateFlag', { targetData: this.updateTarget })
-                .then((res) => {
-                    return;
-                })
-                .catch((err) => {
-                    errorMessage = 'データの削除に失敗しました。';
-                    alert(errorMessage);
-                })
-            },
         },
 
-        beforeRouteEnter(to, from, next) {
+        beforeRouteEnter (to, from, next) {
             next(vm => {
                 vm.prevRoute = from;
             })
         },
 
-    created () {
-        this.getUpdated()
-    },
-
-        mounted() {
+        mounted () {
             // if (this.prevRoute.path === '/registUser') {
-            //     this.message = 'ユーザ登録が完了しました。' + "\n" + '最高の体験があなたを待っています(小並感)';
+            //     this.message = 'User registration has completed.' + "\n" + 'It's time to work!!!';
             //     alert(this.message);
             // }
         },
