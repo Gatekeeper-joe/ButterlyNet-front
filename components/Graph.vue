@@ -3,7 +3,7 @@
 
     export default ({
         extends: Doughnut,
-        props: ['countArr'],
+        props: ['countStat'],
 
         data () {
             return {
@@ -11,7 +11,7 @@
                     labels: ['Open', 'Pending', 'Close'],
                     datasets: [
                         {
-                            data: this.countArr,
+                            data: this.countStat,
                             backgroundColor: ['#F44336', '#FF9800', '#9E9E9E']
                         }
                     ]
