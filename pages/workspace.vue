@@ -3,8 +3,7 @@
         <Navbar />
         <div class="a-dashboard d-flex">
             <div class="col-md-7 d-flex just-center">
-                <Graph :gid="gid" :countArr="countArr"/>
-
+                <Graph :gid="gid" :countStat="countStat" v-if="countStat" />
             </div>
             <UpdatedPageTable />
         </div>
@@ -12,7 +11,6 @@
         <div class="mt-5 handoff-table">
             <HandoffTable :gid="gid" :uname="uname"/>
         </div>
-        {{ countArr }}
     </div>
 </template>
 
@@ -48,7 +46,7 @@
                 index: '',
                 editedItem: '',
                 editedIndex: '',
-                countArr: '',
+                countStat: '',
             }
         },
 
@@ -57,29 +55,34 @@
                 this.hover = true;
             },
 
+            aggregate (records) {
+                let openCount = 0;
+                let pendingCount = 0;
+                let closeCount = 0;
+
+                records.forEach(obj => {
+                    if (obj.status === 'Open') {
+                        openCount += 1;
+                    } else if (obj.status === 'Pending') {
+                        pendingCount += 1;
+                    } else {
+                        closeCount += 1;
+                    }
+                });
+
+                let countStat = [openCount, pendingCount, closeCount];
+                this.countStat = countStat;
+                return;
+            },
+
             getRecord () {
                 this.$axios.$post('/getRecord', {gid: this.gid} )
                 .then((records) => {
-                    let openCount = 0;
-                    let pendingCount = 0;
-                    let closeCount = 0;
-
-                    records.forEach(obj => {
-                        if (obj.status === 'Open') {
-                            openCount += 1;
-                        } else if (obj.status === 'Pending') {
-                            pendingCount += 1;
-                        } else {
-                            closeCount += 1;
-                        }
-                    });
-
-                    let countArr = [openCount, pendingCount, closeCount];
-                    this.countArr = countArr;
+                    this.aggregate(records);
                     return;
                 })
                 .catch((err) => {
-                    alert(err);
+                    console.log(err);
                 })
             },
         },
