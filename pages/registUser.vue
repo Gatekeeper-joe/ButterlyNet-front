@@ -1,14 +1,25 @@
 <template>
     <div class="col-md-7">
         <div class="card mt-5">
-            <div class="card-header card-text">ユーザ登録</div>
+            <div class="card-header card-text">Regist user</div>
 
             <div class="card-body">
                 <form method="POST" @submit.prevent="regist">
                     <div class="form-group row">
-                        <label for="nickname" class="col-md-4 col-form-label text-md-right card-text">ニックネーム</label>
+                        <label for="nickname" class="col-md-4 col-form-label text-md-right card-text">Nickname</label>
                         <div class="col-md-6">
-                            <input id="nickname" type="text" class="form-control" :class="validation.failure.nn ? 'is-invalid': null" name="nickname" required autocomplete="nickname" autofocus v-model="auth.nickname"  ref="inputNickname">
+                            <input
+                                id="nickname"
+                                type="text"
+                                class="form-control"
+                                :class="validation.failure.nn ? 'is-invalid': null"
+                                name="nickname"
+                                required
+                                autocomplete="nickname"
+                                autofocus
+                                v-model="auth.nickname"
+                                ref="inputNickname"
+                            >
                             <span class="invalidFeedback" v-if="validation.failure.nn">
                                 <strong >{{ validation.messages.nickname[0] }}</strong>
                             </span>
@@ -16,45 +27,48 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="password" class="col-md-4 col-form-label text-md-right card-text">パスワード</label>
+                        <label for="password" class="col-md-4 col-form-label text-md-right card-text">Password</label>
 
                         <div class="col-md-6">
-                            <!--入力値の条件を吹き出しで出すときの処理。いったん凍結中。<input id="password" type="password" class="form-control" :class="validation.failure.pwd ? 'is-invalid': null" name="password" required autocomplete="current-password" v-model="auth.password" @focus="display" @blur="hidden"> -->
-                            <input id="password" type="password" class="form-control" :class="validation.failure.pwd ? 'is-invalid': null" name="password" required autocomplete="current-password" v-model="auth.password">
+                            <input
+                                id="password"
+                                type="password"
+                                class="form-control" :class="validation.failure.pwd ? 'is-invalid': null"
+                                name="password"
+                                required autocomplete="current-password"
+                                v-model="auth.password"
+                                v-b-tooltip.focus.righttop="{variant: 'light', customClass: 'tooltip'}" title="foo"
+                            >
                             <span class="invalidFeedback" v-if="validation.failure.pwd">
                                 <strong >{{ validation.messages.password[0] }}</strong>
                             </span>
-                            <div class="speech-bubble">
-                                <p class="">Foo baa</p>
-                            </div>
                         </div>
-                        <!-- <p class="speech-bubble" v-if="focus">Foo baa</p> -->
 
                     </div>
 
                     <div class="form-group row justify-content-center">
                         <div class="col-md-8 mt-3">
                             <div class="mb-2">
-                                <span>※ニックネームは他のユーザと同一のものは使用できません</span>
+                                <span>※Your nicknames must not be the same as other users.</span>
                             </div>
                             <div class="mb-1">
-                                <span>※パスワードは以下の条件をすべて満たしてください</span>
+                                <span>※The password must match all of the following conditions.</span>
                             </div>
                             <ul>
                                 <li>
-                                    <span class="conditions">8文字以上30文字以下</span>
+                                    <span class="conditions">8 to 30 characters.</span>
                                 </li>
                                 <li>
-                                    <span class="conditions">アルファベット大文字小文字使用</span>
+                                    <span class="conditions">Use upper and lower case alphabetical letters.</span>
                                 </li>
                                 <li>
-                                    <span class="conditions">0～9までの数字を1つ以上使用</span>
+                                    <span class="conditions">At least one number from 0 to 9.</span>
                                 </li>
                                 <li>
-                                    <span class="conditions">(!#$%)←の記号のうち1つ以上使用</span>
+                                    <span class="conditions">(!#$%) Use one or more of the symbols in parentheses ().</span>
                                 </li>
                                 <li>
-                                    <span class="conditions">上記全て半角入力</span>
+                                    <span class="conditions">Enter all of the above in half-width characters.</span>
                                 </li>
                             </ul>
                         </div>
@@ -549,152 +563,6 @@ fieldset:disabled a.btn {
 .btn-primary:not(:disabled):not(.disabled).active:focus,
 .show > .btn-primary.dropdown-toggle:focus {
     box-shadow: 0 0 0 0.2rem rgba(82, 161, 225, 0.5);
-}
-
-/* .speech-bubble {
-    position: relative;
-    display: inline-block;
-    background-color: #fff;
-    border: solid 1px #525252;
-    padding: 16px;
-    min-width: 240px;
-    max-width: 100%;
-    text-align: center;
-}
-.speech-bubble:before,
-.speech-bubble:after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    -webkit-transform: translateX(-50%);
-    transform: translateX(-50%);
-}
-.speech-bubble:before {
-    border: solid 1px transparent;
-    border-top: solid 12px #525252;
-}
-.speech-bubble:after {
-    border: solid 14px transparent;
-    border-top: solid 14px #fff;
-    margin-top: -5px;
-}
-.speech-bubble p {
-    margin: 0;
-    padding: 0;
-} */
-
-.speech-bubble-indicator {
-    visibility: hidden
-}
-
-.speech-bubble-pointer {
-    position: absolute;
-    top: 37px;
-    right: -13px;
-    content: '';
-    width: 10px;
-    height: 10px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
-    transform: rotateZ(45deg)
-}
-
-.speech-bubble {
-    position: absolute;
-    top: 22px;
-    right: -248px;
-    z-index: 1;
-    width: 240px;
-    height: 200px
-}
-
-.speech-bubble:before {
-    content: '';
-    width: 240px;
-    height: 20px;
-    position: absolute;
-    background-color: #fff;
-    top: 0;
-    left: 0;
-    border-bottom-left-radius: 15px;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
-    z-index: -1
-}
-
-.speech-bubble .speech-bubble-content {
-    background-color: #fff;
-    padding: 16px;
-    z-index: 1
-}
-
-.speech-bubble:after {
-    content: '';
-    width: 240px;
-    height: 192px;
-    position: absolute;
-    background-color: #fff;
-    bottom: -11px;
-    left: 0;
-    border-top-left-radius: 15px;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
-    z-index: -1
-}
-
-.speech-bubble .strength-progress .strength-progress-background {
-    stroke: #282828;
-    opacity: .1
-}
-
-.speech-bubble .strength-progress .strength-progress-foreground.is-short,.speech-bubble .strength-progress .strength-progress-foreground.is-weak {
-    stroke: #f62f2f
-}
-
-.speech-bubble .strength-progress .strength-progress-foreground.is-fair {
-    stroke: #fdb432
-}
-
-.speech-bubble .strength-progress .strength-progress-foreground.is-strong {
-    stroke: #26b47f
-}
-
-.speech-bubble .strength-title {
-    font-size: 12px;
-    opacity: .6;
-    color: #000;
-    display: inline;
-    float: left;
-    font-weight: 800
-}
-
-.speech-bubble .strength-description {
-    font-size: 12px;
-    text-align: left;
-    line-height: 2;
-    color: grey
-}
-
-.speech-bubble .strength-text {
-    display: inline;
-    float: left;
-    font-weight: 600;
-    font-size: 12px;
-    text-transform: uppercase;
-    color: #f62f2f;
-    margin-left: 10px;
-    margin-right: 10px
-}
-
-.speech-bubble .strength-text.is-short,.speech-bubble .strength-text.is-weak {
-    color: #f62f2f
-}
-
-.speech-bubble .strength-text.is-fair {
-    color: #fdb432
-}
-
-.speech-bubble .strength-text.is-strong {
-    color: #26b47f
 }
 
 </style>
