@@ -3,36 +3,40 @@
         <Navbar />
         <div class="a-dashboard d-flex">
             <div class="col-md-7 d-flex just-center">
-                <Graph :gid="gid" :countStat="countStat" v-if="countStat" />
+                <Chart :gid="gid" :chartData="chartData" v-if="viewChart"/>
+                {{ chartData }}
+                {{ viewChart }}
             </div>
             <UpdatedPageTable />
         </div>
 
         <div class="mt-5 handoff-table">
-            <HandoffTable :gid="gid" :uname="uname"/>
+            <HandoffTable :gid="gid" :uname="uname" @receiveChartData="redraw($event)" />
         </div>
     </div>
 </template>
 
 <script>
     const axios = require('axios')
+    import { Doughnut } from "vue-chartjs"
     import Navbar from "~/components/Navbar"
     import UpdatedPageTable from "~/components/UpdatedPageTable"
     import HandoffTable from "~/components/HandoffTable"
-    import Graph from "~/components/Graph"
+    import Chart from "~/components/Chart"
 
     export default {
+        extends: Doughnut,
         components: {
             Navbar,
             HandoffTable,
             UpdatedPageTable,
-            Graph,
+            Chart,
         },
 
         middleware: ['auth'],
         head() {
             return {
-                title: 'ホーム'
+                title: 'HOME'
             }
         },
 
@@ -46,32 +50,50 @@
                 index: '',
                 editedItem: '',
                 editedIndex: '',
-                countStat: '',
+
+                //Use in Chart.
+                openCount: 0,
+                pendingCount: 0,
+                closeCount: 0,
+                viewChart: false,
+                chartData: {
+                    labels: ['Open', 'Pending', 'Close'],
+                    datasets: [
+                        {
+                            data: '',
+                            backgroundColor: ''
+                        }
+                    ],
+                },
             }
         },
 
         methods: {
-            displayIcon () {
-                this.hover = true;
-            },
-
             aggregate (records) {
-                let openCount = 0;
-                let pendingCount = 0;
-                let closeCount = 0;
+                this.openCount = 0;
+                this.pendingCount = 0;
+                this.closeCount = 0;
 
                 records.forEach(obj => {
                     if (obj.status === 'Open') {
-                        openCount += 1;
+                        this.openCount += 1;
                     } else if (obj.status === 'Pending') {
-                        pendingCount += 1;
+                        this.pendingCount += 1;
                     } else {
-                        closeCount += 1;
+                        this.closeCount += 1;
                     }
                 });
 
-                let countStat = [openCount, pendingCount, closeCount];
-                this.countStat = countStat;
+                // let countStat = [openCount, pendingCount, closeCount];
+
+                const countStat = [
+                    {
+                        data: [this.openCount, this.pendingCount, this.closeCount],
+                        backgroundColor: ['#F44336', '#FF9800', '#9E9E9E']
+                    }
+                ]
+
+                this.$set(this.chartData,"datasets", countStat);
                 return;
             },
 
@@ -79,17 +101,40 @@
                 this.$axios.$post('/getRecord', {gid: this.gid} )
                 .then((records) => {
                     this.aggregate(records);
+                    this.viewChart = true
                     return;
                 })
                 .catch((err) => {
                     console.log(err);
                 })
             },
+
+            redraw ($event) {
+                let deletestatus = $event;
+                this.viewChart = false;
+
+                if (deletestatus === 'Open') {
+                    this.openCount --;
+                } else if (deletestatus === 'Pending') {
+                    this.pendingCount --;
+                } else {
+                    this.closeCount --;
+                }
+
+                const countStat = [
+                    {
+                        data: [this.openCount, this.pendingCount, this.closeCount],
+                        backgroundColor: ['#F44336', '#FF9800', '#9E9E9E']
+                    }
+                ]
+                this.$set(this.chartData,"datasets", countStat);
+
+                setTimeout(this.viewChart = true, 2000);
+                return;
+            }
+
         },
 
-        created () {
-            this.getRecord();
-        },
 
         beforeRouteEnter (to, from, next) {
             next(vm => {
@@ -98,6 +143,7 @@
         },
 
         mounted () {
+            this.getRecord();
             // if (this.prevRoute.path === '/registUser') {
             //     this.message = 'User registration has completed.' + "\n" + 'It's time to work!!!';
             //     alert(this.message);
