@@ -11,6 +11,7 @@
                             :disable-sort=true
                             sort-by="count"
                             class="elevation-1"
+                            no-data-text=""
                         >
                             <template v-slot:[`item.host`] = "{ item }">
                                 <a :href="item.url" target="_blank">{{ item.host }}</a>
@@ -21,7 +22,7 @@
                                 </v-icon>
                             </template>
                             <template v-slot:no-data>
-                                <span>Loading... Please wait</span>
+                                <span>No data available</span>
                             </template>
                         </v-data-table>
                     </template>
