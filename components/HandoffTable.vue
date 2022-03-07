@@ -127,159 +127,195 @@
 </template>
 
 <script>
-const axios = require('axios');
+    const axios = require('axios');
 
-export default {
-    props: ['gid', 'uname'],
+    export default {
+        props: ['gid', 'uname'],
 
-    data: () => ({
-        headers: [
-            { text: 'ID', align: 'center',value: 'id'},
-            { text: 'Subject', value: 'subject', width: 450},
-            { text: 'Status', value: 'status'},
-            { text: 'Created Time', value: 'created_at', filterable: false },
-            { text: 'Updated Time', value: 'updated_at', filterable: false },
-            { text: '', value: 'actions', sortable: false, filterable: false},
-        ],
-        items: [],
-        expanded: [],
-        status: ['Open', 'Pending', 'Close'],
+        data: () => ({
+            count: '',
+            headers: [
+                { text: 'ID', align: 'center',value: 'id'},
+                { text: 'Subject', value: 'subject', width: 450},
+                { text: 'Status', value: 'status'},
+                { text: 'Created Time', value: 'created_at', filterable: false },
+                { text: 'Updated Time', value: 'updated_at', filterable: false },
+                { text: '', value: 'actions', sortable: false, filterable: false},
+            ],
+            items: [],
+            expanded: [],
+            status: ['Open', 'Pending', 'Close'],
 
-        search: '',
+            search: '',
 
-        max25chars: v => v.length <= 25 || 'Input too long!',
+            max25chars: v => v.length <= 25 || 'Input too long!',
 
-        dialog: false,
-        deleteDialog: false,
-        updateDialog: false,
-        updateFlag: false,
-        editedIndex: '',
-        editedItem: {
-            group_id: '',
-            status: '',
-            subject: '',
-            body: '',
+            dialog: false,
+            deleteDialog: false,
+            updateDialog: false,
+            updateFlag: false,
+            editedIndex: '',
+            editedItem: {
+                group_id: '',
+                status: '',
+                subject: '',
+                body: '',
+            },
+
+            defaultItem: {
+                group_id: '',
+                status: '',
+                subject: '',
+                body: '',
+            },
+
+            deleteItem: {
+                group_id: '',
+                id: '',
+            },
+
+            chartData: {},
+            deletedStatus: '',
+        }),
+
+        watch: {
+            dialog (val) {
+                val || this.close()
+            },
+            deleteDialog (val) {
+                val || this.closeDelete()
+            },
         },
 
-        defaultItem: {
-            group_id: '',
-            status: '',
-            subject: '',
-            body: '',
+        created () {
+            this.getRecord();
+            this.setProp();
         },
 
-        deleteItem: {
-            group_id: '',
-            id: '',
-        },
-    }),
+        methods: {
+            getRecord () {
+                this.$axios.$post('/getRecord', {gid: this.gid} )
+                .then((records) => {
+                    this.items = records;
+                })
+                .catch((err) => {
+                    alert(err);
+                })
+            },
 
-    watch: {
-        dialog (val) {
-            val || this.close()
-        },
-        deleteDialog (val) {
-            val || this.closeDelete()
-        },
-    },
+            updateRecord () {
+                this.$axios.$post('/update', {editedItem: this.editedItem})
+                .then ((records) => {
+                    this.items = records;
+                    this.dialog = false;
+                })
+                .catch ((err) => {
+                    console.log(err);
+                })
+            },
 
-    created () {
-        this.getRecord();
-        this.setProp();
-    },
+            deleteItemConfirm (item) {
+                this.editedIndex = this.items.indexOf(item)
+                this.deleteItem = Object.assign({}, item)
+                this.deletedStatus = this.deleteItem.status;
+                this.deleteDialog = true
+            },
 
-    methods: {
-        getRecord () {
-            this.$axios.$post('/getRecord', {gid: this.gid} )
-            .then((records) => {
-                this.items = records;
-            })
-            .catch((err) => {
-                alert(err);
-            })
-        },
+            deleteRecord () {
+                this.$axios.$post('/delete', {deleteItem: this.deleteItem})
+                .then(() => {
+                    this.items.splice(this.editedIndex, 1);
+                    this.aggregate(this.items);
+                    this.$emit('receiveChartData', this.deletedStatus);
+                    this.closeDelete();
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+            },
 
-        updateRecord () {
-            this.$axios.$post('/update', {editedItem: this.editedItem})
-            .then ((records) => {
-                this.items = records;
-                this.dialog = false;
-            })
-            .catch ((err) => {
-                console.log(err);
-            })
-        },
+            close () {
+                this.dialog = false,
+                this.$nextTick(() => {
+                this.editedItem = Object.assign({}, this.defaultItem)
+                })
+            },
 
-        deleteItemConfirm (item) {
-            this.editedIndex = this.items.indexOf(item)
-            this.deleteItem = Object.assign({}, item)
-            this.deleteDialog = true
-        },
+            closeDelete () {
+                this.deleteDialog = false
+                this.editedItem = Object.assign({}, this.defaultItem)
+            },
 
-        deleteRecord () {
-            this.$axios.$post('/delete', {deleteItem: this.deleteItem})
-            .then(() => {
-                this.items.splice(this.editedIndex, 1);
-                this.closeDelete()
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-        },
+            getColor (status) {
+                if (status === 'Open') return '#F44336'
+                else if (status === 'Pending')  return '#FF9800'
+                else return '#9E9E9E'
+            },
 
-        close () {
-            this.dialog = false,
-            this.$nextTick(() => {
-            this.editedItem = Object.assign({}, this.defaultItem)
-            })
-        },
+            //Can't assign prop: ['gid'] to this.gid in data(). For that reason, this function was created.
+            setProp () {
+                this.editedItem.group_id = this.gid;
+                this.deleteItem.group_id = this.gid;
+            },
 
-        closeDelete () {
-            this.deleteDialog = false
-            this.editedItem = Object.assign({}, this.defaultItem)
-        },
+            show () {
+                let date = new Date();
+                let datetime = date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' +('0' + date.getDate()).slice(-2) + ' ' +  ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2);
+                let uname = this.uname;
+                let prefix = datetime + ' ' + uname + "\n";
+                this.editedItem.body = prefix;
+                this.dialog = true;
+            },
 
-        getColor (status) {
-            if (status === 'Open') return '#F44336'
-            else if (status === 'Pending')  return '#FF9800'
-            else return '#9E9E9E'
-        },
+            create () {
+                this.editedItem.group_id = this.gid;
+                this.editedItem.status = '';
+                this.$axios.$post('create', {editedItem: this.editedItem})
+                .then((records) => {
+                    this.items = records;
+                    this.dialog = false;
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+            },
 
-        //Can't assign prop: ['gid'] to this.gid in data(). For that reason, this function was created.
-        setProp () {
-            this.editedItem.group_id = this.gid;
-            this.deleteItem.group_id = this.gid; //deleteConfirm()内のassignメソッドで割り当てられる可能性があるからここの処理は不要かも。
-        },
+            editItem (item) {
+                this.editedIndex = this.items.indexOf(item)
+                this.editedItem = Object.assign({}, item)
+                this.updateFlag = true;
+                this.dialog = true;
+            },
 
-        show () {
-            let date = new Date();
-            let datetime = date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' +('0' + date.getDate()).slice(-2) + ' ' +  ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2);
-            let uname = this.uname;
-            let prefix = datetime + ' ' + uname + "\n";
-            this.editedItem.body = prefix;
-            this.dialog = true;
-        },
+            aggregate (items) {
+                let openCount = 0;
+                let pendingCount = 0;
+                let closeCount = 0;
 
-        create () {
-            this.editedItem.group_id = this.gid;
-            this.editedItem.status = '';
-            this.$axios.$post('create', {editedItem: this.editedItem})
-            .then((records) => {
-                this.items = records;
-                this.dialog = false;
-            })
-            .catch((err) => {
-                console.log(err);
-            })
+                items.forEach(obj => {
+                    if (obj.status === 'Open') {
+                        openCount += 1;
+                    } else if (obj.status === 'Pending') {
+                        pendingCount += 1;
+                    } else {
+                        closeCount += 1;
+                    }
+                });
+
+                // console.log([openCount, pendingCount, closeCount]);
+
+                const countStat = [
+                    {
+                        data: [openCount, pendingCount, closeCount],
+                        backgroundColor: ['#F44336', '#FF9800', '#9E9E9E']
+                    }
+                ]
+
+                this.$set(this.chartData,"datasets", countStat);
+                return;
+            }
         },
-        editItem (item) {
-            this.editedIndex = this.items.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.updateFlag = true;
-            this.dialog = true;
-        },
-    },
-}
+    }
 
 </script>
 
