@@ -9,7 +9,16 @@
                         <label for="url" class="col-md-3 col-form-label text-md-right card-text">URL</label>
 
                         <div class="col-md-8">
-                            <input id="url" type="text" class="form-control" :class="duplication ? 'is-invalid': null" name="url" placeholder="Please enter you want to confirm updated." ref="inputURL" required autofocus v-model="data.url">
+                            <input id="url"
+                                type="text"
+                                class="form-control" :class="duplication ? 'is-invalid': null"
+                                name="url"
+                                placeholder="Please enter you want to confirm updated."
+                                ref="inputURL"
+                                required
+                                autofocus
+                                v-model="data.url"
+                            >
                             <span class="invalidFeedback" v-if="duplication">
                                 <strong >{{ message }}</strong>
                             </span>
@@ -60,7 +69,6 @@ export default {
                 }
             })
             .catch((err) => {
-                alert(err);
                 this.error = "指定されたURLにアクセスできません。" + "<br>" + "再度登録ボタンを押すか利用可能なURLを指定してください。"
             })
         }
