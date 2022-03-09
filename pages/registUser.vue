@@ -75,9 +75,9 @@
                     </div>
 
                     <div class="form-group row mb-0 form-lower-part">
-                        <div class="col-md-8 offset-md-4">
+                        <div class="col-md-12 text-center">
                             <button type="submit" class="btn btn-primary">
-                                登録
+                                Submit
                             </button>
                         </div>
                     </div>
@@ -93,7 +93,7 @@ const axios = require('axios')
 export default {
     head() {
         return {
-            title: 'ユーザ登録'
+            title: 'Regist user'
         }
     },
 
