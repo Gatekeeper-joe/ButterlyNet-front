@@ -127,10 +127,13 @@
 </template>
 
 <script>
+    import { Doughnut, mixins } from "vue-chartjs"
+    const { reactiveProp } = mixins;
     const axios = require('axios');
 
     export default {
         props: ['gid', 'uname'],
+        mixins: [reactiveProp],
 
         data: () => ({
             count: '',
@@ -145,11 +148,8 @@
             items: [],
             expanded: [],
             status: ['Open', 'Pending', 'Close'],
-
             search: '',
-
             max25chars: v => v.length <= 25 || 'Input too long!',
-
             dialog: false,
             deleteDialog: false,
             updateDialog: false,
@@ -161,21 +161,16 @@
                 subject: '',
                 body: '',
             },
-
             defaultItem: {
                 group_id: '',
                 status: '',
                 subject: '',
                 body: '',
             },
-
             deleteItem: {
                 group_id: '',
                 id: '',
             },
-
-            chartData: {},
-            deletedStatus: '',
         }),
 
         watch: {
@@ -188,7 +183,6 @@
         },
 
         created () {
-            this.getRecord();
             this.setProp();
         },
 
@@ -197,16 +191,44 @@
                 this.$axios.$post('/getRecord', {gid: this.gid} )
                 .then((records) => {
                     this.items = records;
+                    this.aggregate();
                 })
                 .catch((err) => {
-                    alert(err);
+                    console.log(err);
                 })
+            },
+
+            aggregate () {
+                let openCount = 0;
+                let pendingCount = 0;
+                let closeCount = 0;
+
+                this.items.forEach(obj => {
+                    if (obj.status === 'Open') {
+                        openCount += 1;
+                    } else if (obj.status === 'Pending') {
+                        pendingCount += 1;
+                    } else {
+                        closeCount += 1;
+                    }
+                });
+
+                const datasets = [
+                    {
+                        data: [openCount, pendingCount, closeCount],
+                        backgroundColor: ['#F44336', '#FF9800', '#9E9E9E']
+                    }
+                ];
+
+                this.$emit('receiveChartData', datasets);
+                return;
             },
 
             updateRecord () {
                 this.$axios.$post('/update', {editedItem: this.editedItem})
                 .then ((records) => {
                     this.items = records;
+                    this.aggregate();
                     this.dialog = false;
                 })
                 .catch ((err) => {
@@ -225,8 +247,7 @@
                 this.$axios.$post('/delete', {deleteItem: this.deleteItem})
                 .then(() => {
                     this.items.splice(this.editedIndex, 1);
-                    this.aggregate(this.items);
-                    this.$emit('receiveChartData', this.deletedStatus);
+                    this.aggregate();
                     this.closeDelete();
                 })
                 .catch((err) => {
@@ -273,6 +294,7 @@
                 this.$axios.$post('create', {editedItem: this.editedItem})
                 .then((records) => {
                     this.items = records;
+                    this.aggregate();
                     this.dialog = false;
                 })
                 .catch((err) => {
@@ -286,35 +308,11 @@
                 this.updateFlag = true;
                 this.dialog = true;
             },
-
-            aggregate (items) {
-                let openCount = 0;
-                let pendingCount = 0;
-                let closeCount = 0;
-
-                items.forEach(obj => {
-                    if (obj.status === 'Open') {
-                        openCount += 1;
-                    } else if (obj.status === 'Pending') {
-                        pendingCount += 1;
-                    } else {
-                        closeCount += 1;
-                    }
-                });
-
-                // console.log([openCount, pendingCount, closeCount]);
-
-                const countStat = [
-                    {
-                        data: [openCount, pendingCount, closeCount],
-                        backgroundColor: ['#F44336', '#FF9800', '#9E9E9E']
-                    }
-                ]
-
-                this.$set(this.chartData,"datasets", countStat);
-                return;
-            }
         },
+
+        mounted () {
+            this.getRecord();
+        }
     }
 
 </script>
