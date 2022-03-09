@@ -9,7 +9,15 @@
                         <label for="nickname" class="col-md-4 col-form-label text-md-right card-text">Nickname</label>
 
                         <div class="col-md-6">
-                            <input id="nickname" type="text" class="form-control" name="nickname" required autocomplete="nickname" autofocus v-model="auth.nickname">
+                            <input
+                                id="nickname"
+                                type="text"
+                                class="form-control"
+                                name="nickname"
+                                required autocomplete="nickname"
+                                autofocus
+                                v-model="auth.nickname"
+                            >
                         </div>
                     </div>
 
@@ -17,27 +25,31 @@
                         <label for="password" class="col-md-4 col-form-label text-md-right card-text">Password</label>
 
                         <div class="col-md-6">
-                            <input id="password" type="password" class="form-control" name="password" required autocomplete="current-password" v-model="auth.password">
+                            <input
+                                id="password"
+                                type="password"
+                                class="form-control"
+                                name="password"
+                                required
+                                autocomplete="current-password"
+                                v-model="auth.password"
+                            >
                         </div>
                     </div>
 
                     <div class="form-group row justify-content-center">
-                        <div class="col-md-6" v-if="validation.message">
+                        <div class="col-md-12 text-center" v-if="validation.message">
                             <span class="invalidfeedback">
-                                <strong>Mail address or password is wrong</strong>
+                                <strong>{{ validation.message }}</strong>
                             </span>
                         </div>
                     </div>
 
-                    <div class="form-group row mb-0 form-lower-part">
-                        <div class="col-md-8 offset-md-4">
+                    <div class="form-group row mb-0 form-lower-part justify-content-center">
+                        <div class="col-md-8 text-center">
                             <button type="submit" class="btn btn-primary">
                                 Login
                             </button>
-
-                            <nuxt-link class="btn btn-link" to="reset" v-bind:disabled="processing">
-                                Forgot your password
-                            </nuxt-link>
                         </div>
                     </div>
                 </form>
@@ -66,23 +78,23 @@ export default {
 
             validation: {
                 message: '',
-                failure: {
-                    nn: false,
-                    pwd: false
-                },
+                failure: false,
             },
         }
     },
     methods: {
         async login() {
-            this.auth.error = false
             this.processing = true
             try {
                 this.$auth.loginWith('User', { data: this.auth })
                 .then((res)=>{
-                    this.result = res
+                    if (res) {
+                        this.validation.message = 'Please check your username and password and try again.';
+                    }
                 })
             } catch (err) {
+                validation.failure = true;
+                this.validation.message = res
                 this.processing = false
             }
         }
