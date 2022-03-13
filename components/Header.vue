@@ -19,5 +19,6 @@
     .header-title {
         color: white;
         font-size: 4rem;
+        font-family: serif;
     }
 </style>
