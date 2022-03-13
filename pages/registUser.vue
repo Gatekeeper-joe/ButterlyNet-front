@@ -37,7 +37,7 @@
                                 name="password"
                                 required autocomplete="current-password"
                                 v-model="auth.password"
-                                v-b-tooltip.focus.righttop="{variant: 'light', customClass: 'tooltip'}" title="foo"
+                                v-b-tooltip.focus.right="{variant: 'light', customClass: 'tooltip'}" :title="tooltipText"
                             >
                             <span class="invalidFeedback" v-if="validation.failure.pwd">
                                 <strong >{{ validation.messages.password[0] }}</strong>
@@ -65,7 +65,7 @@
                                     <span class="conditions">At least one number from 0 to 9.</span>
                                 </li>
                                 <li>
-                                    <span class="conditions">(!#$%) Use one or more of the symbols in parentheses ().</span>
+                                    <span class="conditions" style="font-size: 15px;">(!#$%) Use one or more of the symbols in parentheses ().</span>
                                 </li>
                                 <li>
                                     <span class="conditions">Enter all of the above in half-width characters.</span>
@@ -115,11 +115,13 @@ export default {
                     pwd: false
                 },
             },
+
+            options: '',
         }
     },
 
     methods: {
-        regist() {
+        regist () {
             this.auth.error = false
             this.processing = true
             try {
@@ -153,16 +155,27 @@ export default {
             }
         },
 
-        display() {
+        display () {
             this.focus = true;
         },
 
-        hidden() {
+        hidden () {
             this.focus = false;
-        }
+        },
+
+        createOptions () {
+            this.options = {
+                title: '<div class="col-md-8 mt-3"><div class="mb-2"><span>※Your nicknames must not be the same as other users.</span></div><div class="mb-1"><span>※The password must match all of the following conditions.</span></div><ul><li><span class="conditions">8 to 30 characters.</span></li><li><span class="conditions">Use upper and lower case alphabetical letters.</span></li><li><span class="conditions">At least one number from 0 to 9.</span></li><li><span class="conditions" style="font-size: 15px;">(!#$%) Use one or more of the symbols in parentheses ().</span></li><li><span class="conditions">Enter all of the above in half-width characters.</span></li></ul></div>',
+                html: true,
+                variant: 'light',
+                customClass: 'tooltip'
+            }
+        },
     },
 
     mounted() {
+        this.createOptions();
+
         //autofocusを有効にする
         this.$nextTick(() => this.$refs.inputNickname.focus())
     }
@@ -563,6 +576,10 @@ fieldset:disabled a.btn {
 .btn-primary:not(:disabled):not(.disabled).active:focus,
 .show > .btn-primary.dropdown-toggle:focus {
     box-shadow: 0 0 0 0.2rem rgba(82, 161, 225, 0.5);
+}
+
+.tooltip {
+    font-size: 1.6rem;
 }
 
 </style>
