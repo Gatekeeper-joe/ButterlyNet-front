@@ -2,10 +2,8 @@
     <div class="workspace">
         <Navbar />
         <div class="a-dashboard d-flex">
-            <div class="col-md-7 d-flex just-center">
-                <Chart :chart-data="chartData" v-if="viewChart" />
-                {{ chartData }}
-                {{ viewChart }}
+            <div class="col-md-7 d-flex just-center" v-if="viewChart">
+                <Chart :chart-data="chartData" />
             </div>
             <UpdatedPageTable />
         </div>
@@ -110,10 +108,10 @@
         },
 
         mounted () {
-            // if (this.prevRoute.path === '/registUser') {
-            //     this.message = 'User registration has completed.' + "\n" + 'It's time to work!!!';
-            //     alert(this.message);
-            // }
+            if (this.prevRoute.path === '/registUser') {
+                this.message = 'User registration has completed.' + "\n" + 'It\'s time to work!!!';
+                alert(this.message);
+            }
         },
 
     }
