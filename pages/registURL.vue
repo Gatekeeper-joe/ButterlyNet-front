@@ -5,9 +5,7 @@
 
             <div class="card-body">
                 <form method="POST" @submit.prevent="regist">
-                    <div class="form-group row align-center">
-                        <label for="url" class="col-md-3 col-form-label text-md-right card-text">URL</label>
-
+                    <div class="form-group row align-center just-center">
                         <div class="col-md-8">
                             <input id="url"
                                 type="text"
@@ -59,17 +57,17 @@ export default {
             .then((res)=>{
                 if (res === 0) {
                     this.duplication = true,
-                    this.message = '指定したURLは既に登録されています'
+                    this.message = 'The specified URL is already registered.'
                 } else {
                     this.message = '';
                     this.duplication = false;
                     this.data.url = '';
-                    alert('URLの登録が完了しました。');
+                    alert('The URL has been registered.');
                     this.$nextTick(() => this.$refs.inputURL.focus())
                 }
             })
             .catch((err) => {
-                this.error = "指定されたURLにアクセスできません。" + "<br>" + "再度登録ボタンを押すか利用可能なURLを指定してください。"
+                this.error = "Unable to access the specified URL." + "<br>" + "Click the submit button again or specify an available URL."
             })
         }
     },
