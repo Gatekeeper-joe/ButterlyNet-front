@@ -188,7 +188,7 @@
 
         methods: {
             getRecord () {
-                this.$axios.$post('/getRecord', {gid: this.gid} )
+                this.$axios.$get('/getRecord')
                 .then((records) => {
                     this.items = records;
                     this.aggregate();
