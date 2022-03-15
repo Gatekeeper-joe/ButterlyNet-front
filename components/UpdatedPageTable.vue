@@ -60,7 +60,7 @@
 
         methods: {
             getUpdated () {
-                this.$axios.$post('/getUpdated', { uid: this.user_id })
+                this.$axios.$get('/getUpdated')
                 .then((pageData) => {
                     this.pageData = pageData;
                     this.count = this.pageData.length;
