@@ -16,6 +16,7 @@
                                 name="nickname"
                                 required autocomplete="nickname"
                                 autofocus
+                                ref="nickname"
                                 v-model="auth.nickname"
                             >
                         </div>
@@ -98,6 +99,11 @@ export default {
                 this.processing = false
             }
         }
+    },
+
+    mounted() {
+        //For enabling autofocus.
+        this.$nextTick(() => this.$refs.nickname.focus())
     }
 }
 </script>
