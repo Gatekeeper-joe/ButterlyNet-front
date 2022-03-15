@@ -1,6 +1,5 @@
 <template>
     <div class="nav-bar">
-        <!-- <ul class="nav-list" :class="this.navwidth ? 'nav-width-s': 'nav-width-l'"> -->
         <ul class="nav-list">
             <li v-if="$auth.loggedIn" class="nav-item cursors">
                 <div class="nav-link" @click="$auth.logout()">
@@ -27,11 +26,11 @@
                 links: this.$auth.loggedIn && '/' === this.$route.path ? [
                     { id:1, icon:"table", text:"Workspace", url:"workspace"},
                     { id:2, icon:"pencil-square", text:"Regist URL", url:"registURL"},
-                    { id:3, icon:"person-circle", text:this.$auth.user.nickname, url:"resetPassword"},
+                    { id:3, icon:"person-circle", text:this.$auth.user.nickname, url:""},
                 ] : this.$auth.loggedIn ? [
                     { id:1, icon:"journal-bookmark", text:"Description", url:"/"},
                     { id:2, icon:"pencil-square", text:"Regist URL", url:"registURL"},
-                    { id:3, icon:"person-circle", text:this.$auth.user.nickname, url:"resetPassword"},
+                    { id:3, icon:"person-circle", text:this.$auth.user.nickname, url:""},
                 ] : [
                     { id:1, icon:"door-open", text:"Login", url:"login"},
                     { id:2, icon:"person-circle", text:"Regist User", url:"registUser"},
@@ -60,14 +59,6 @@
         margin-top: 60px;
         text-align: center;
         margin-bottom: 30px;
-    }
-
-    .nav-width-s {
-        width: 389px;
-    }
-
-    .nav-width-l {
-        width: 515px;
     }
 
     .nav-list {
