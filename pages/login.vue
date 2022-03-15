@@ -64,7 +64,7 @@ const axios = require('axios')
 export default {
     head() {
         return {
-            title: "ログイン"
+            title: "Login"
         }
     },
     data() {
@@ -89,12 +89,12 @@ export default {
                 this.$auth.loginWith('User', { data: this.auth })
                 .then((res)=>{
                     if (res) {
-                        this.validation.message = 'Please check your username and password and try again.';
+                        return;
                     }
                 })
             } catch (err) {
                 validation.failure = true;
-                this.validation.message = res
+                this.validation.message = 'Please check your username and password and try again.';
                 this.processing = false
             }
         }
