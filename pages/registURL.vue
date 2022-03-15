@@ -7,7 +7,8 @@
                 <form method="POST" @submit.prevent="regist">
                     <div class="form-group row align-center just-center">
                         <div class="col-md-8">
-                            <input id="url"
+                            <input
+                                id="url"
                                 type="text"
                                 class="form-control" :class="duplication ? 'is-invalid': null"
                                 name="url"
