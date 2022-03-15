@@ -226,9 +226,8 @@
 
             updateRecord () {
                 this.$axios.$post('/update', {editedItem: this.editedItem})
-                .then ((records) => {
-                    this.items = records;
-                    this.aggregate();
+                .then (() => {
+                    location.reload();
                     this.dialog = false;
                 })
                 .catch ((err) => {
@@ -246,8 +245,7 @@
             deleteRecord () {
                 this.$axios.$post('/delete', {deleteItem: this.deleteItem})
                 .then(() => {
-                    this.items.splice(this.editedIndex, 1);
-                    this.aggregate();
+                    location.reload();
                     this.closeDelete();
                 })
                 .catch((err) => {
@@ -292,9 +290,8 @@
                 this.editedItem.group_id = this.gid;
                 this.editedItem.status = '';
                 this.$axios.$post('create', {editedItem: this.editedItem})
-                .then((records) => {
-                    this.items = records;
-                    this.aggregate();
+                .then(() => {
+                    location.reload();
                     this.dialog = false;
                 })
                 .catch((err) => {
