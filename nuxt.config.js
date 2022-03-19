@@ -4,6 +4,9 @@ Vue.use(BootstrapVue)
 import BootstrapVue from 'bootstrap-vue'
 
 export default {
+    ssr: true,
+    target: 'server',
+
     // Global page headers: https://go.nuxtjs.dev/config-head
     head: {
         title: 'Butterfly.Net',
