@@ -64,7 +64,7 @@ export default {
         },
     },
 
-    //BASE_URL="http://127.0.0.1:8000/api"
+    //BASE_URL="http://54.248.64.197:8000/api"
     axios: {
         baseURL:  process.env.BASE_URL
     },
