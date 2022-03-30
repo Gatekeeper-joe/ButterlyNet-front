@@ -66,7 +66,7 @@ export default {
 
     //BASE_URL="https://52.198.111.82:443/api"
     axios: {
-        baseURL:  "https://52.198.111.82:443/api/public"
+        baseURL:  "https://52.198.111.82:443/public"
     },
 
     auth: {
