@@ -66,7 +66,7 @@ export default {
 
     //BASE_URL="https://52.198.111.82:443/api"
     axios: {
-        baseURL:  "https://52.198.111.82:443/routes/api.php"
+        baseURL:  "https://52.198.111.82:443/routes"
     },
 
     auth: {
@@ -80,7 +80,7 @@ export default {
         strategies: {
             User: {
                 provider: 'laravel/jwt',
-                url: 'https://52.198.111.82:443/routes/api.php',
+                url: 'https://52.198.111.82:443/routes',
                 token: {
                     property: 'access_token',
                     maxAge: 60 * 60,
