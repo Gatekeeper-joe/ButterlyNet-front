@@ -64,9 +64,9 @@ export default {
         },
     },
 
-    //BASE_URL="https://52.198.111.82:443/api"
+    //BASE_URL="https://butterflynet.ga/api"
     axios: {
-        baseURL:  "https://52.198.111.82:443/api"
+        baseURL:  "https://butterflynet.ga/api"
     },
 
     auth: {
@@ -80,7 +80,7 @@ export default {
         strategies: {
             User: {
                 provider: 'laravel/jwt',
-                url: 'https://52.198.111.82:443/api',
+                url: 'https://butterflynet.ga/api',
                 token: {
                     property: 'access_token',
                     maxAge: 60 * 60,
