@@ -119,9 +119,9 @@
 
 <style>
     .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
-        font-size: 1.5rem;
-        height: 50px;
-        padding: 0 15px;
+        font-size: 1.5rem !important;
+        height: 50px !important;
+        padding: 0 15px !important;
     }
 
     .v-data-footer {
