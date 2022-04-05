@@ -41,7 +41,7 @@
                                                         <v-row v-if="updateFlag">
                                                             <v-col class="d-flex pb-0" sm="3">
                                                                 <!-- <v-select :items="status" :label="editedItem.status" v-model="editedItem.status"></v-select> -->
-                                                                <v-select :items="status" :label="Status" v-model="editedItem.status"></v-select>
+                                                                <v-select :items="status" :label="label" v-model="editedItem.status"></v-select>
                                                             </v-col>
                                                         </v-row>
                                                         <v-row class="mb-1">
@@ -150,6 +150,7 @@
             expanded: [],
             status: ['Open', 'Pending', 'Close'],
             search: '',
+            label: 'Status',
             max25chars: v => v.length <= 25 || 'Input too long!',
             dialog: false,
             deleteDialog: false,
