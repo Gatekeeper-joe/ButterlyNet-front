@@ -40,7 +40,8 @@
                                                     <b-modal id="modal-center" size="lg" centered v-model="dialog" ok-title="Create" @hidden="updateFlag=false">
                                                         <v-row v-if="updateFlag">
                                                             <v-col class="d-flex pb-0" sm="3">
-                                                                <v-select :items="status" :label="editedItem.status" v-model="editedItem.status"></v-select>
+                                                                <!-- <v-select :items="status" :label="editedItem.status" v-model="editedItem.status"></v-select> -->
+                                                                <v-select :items="status" :label="Status" v-model="editedItem.status"></v-select>
                                                             </v-col>
                                                         </v-row>
                                                         <v-row class="mb-1">
