@@ -34,7 +34,7 @@
         middleware: ['auth'],
         head() {
             return {
-                title: 'HOME'
+                title: 'Workspace'
             }
         },
 
